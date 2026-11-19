@@ -1,0 +1,5 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icons">
+<path id="mobile" d="M8 2C8 0.9 7.1 0 6 0H2C0.9 0 0 0.9 0 2V10C0 11.1 0.9 12 2 12H6C7.1 12 8 11.1 8 10V2ZM4.5 11H3.5C3.2 11 3 10.8 3 10.5C3 10.2 3.2 10 3.5 10H4.5C4.8 10 5 10.2 5 10.5C5 10.8 4.8 11 4.5 11ZM7 8.5C7 8.8 6.8 9 6.5 9H1.5C1.2 9 1 8.8 1 8.5V2.5C1 2.2 1.2 2 1.5 2H6.5C6.8 2 7 2.2 7 2.5V8.5Z" fill="#19213D" fill-opacity="0.7"/>
+</g>
+</svg>

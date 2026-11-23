@@ -1,6 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  BookOpen,
+  Box,
+  ChevronRight,
+  CreditCard,
+  FileText,
+  KeyRound,
+  Paperclip,
+  Scale,
+  Search,
+  Send,
+  Wrench,
+  X,
+} from "lucide-react";
 
 export type SupportTab = "knowledge" | "tickets" | "contact";
 
@@ -10,79 +24,143 @@ interface SupportCenterOverlayProps {
   initialTab?: SupportTab;
 }
 
+interface TicketMessage {
+  sender: "you" | "support";
+  text: string;
+  time: string;
+}
+
 interface SupportTicket {
   id: string;
   title: string;
   updatedAt: string;
   status: "Open" | "Resolved" | "Closed";
-  priority: "High Priority" | "Medium Priority" | "Low Priority";
+  priority: "High" | "Medium" | "Low";
   category: string;
+  messages: TicketMessage[];
 }
 
 const CATEGORIES = [
-  { id: "getting-started", title: "Getting Started", count: "12 articles", bg: "bg-[#e3f2fd]", color: "#004bda" },
-  { id: "account-billing", title: "Account & Billing", count: "8 articles", bg: "bg-[#e8f5e9]", color: "#007f5f" },
-  { id: "3d-assets", title: "3D Assets & Formats", count: "24 articles", bg: "bg-[#f3e5f5]", color: "#8e44ad" },
-  { id: "api-integrations", title: "API & Integrations", count: "15 articles", bg: "bg-[#fff3e0]", color: "#e67e22" },
-  { id: "licensing", title: "Licensing & Legal", count: "6 articles", bg: "bg-[#fce4ec]", color: "#e91e63" },
-  { id: "troubleshooting", title: "Troubleshooting", count: "19 articles", bg: "bg-[#e0f7fa]", color: "#0097a7" },
+  { id: "getting-started", title: "Getting started", Icon: BookOpen },
+  { id: "account-billing", title: "Billing & credits", Icon: CreditCard },
+  { id: "3d-assets", title: "3D assets & PBR", Icon: Box },
+  { id: "api-integrations", title: "Bridge & API", Icon: KeyRound },
+  { id: "licensing", title: "Licensing", Icon: Scale },
+  { id: "troubleshooting", title: "Troubleshooting", Icon: Wrench },
 ];
 
 const ARTICLES = [
   {
     id: "export-3d",
-    title: "How to export 3D models with textures?",
+    title: "How to export 3D models with linked PBR textures",
     category: "3d-assets",
     content:
-      "When downloading from the Download Center, select your preferred Texture Resolution (up to 4K PNG 16-bit) and Object Format (FBX, OBJ, GLTF, or USDZ). The archive (.ZIP) bundles all PBR texture maps automatically linked to the material slots.",
+      "Open Downloads, expand any owned asset, and pick your target geometry (High-poly or LOD0–LOD3), texture resolution (up to 8K PNG/EXR), and mesh format (FBX, OBJ, GLB, or USDZ). The archive bundles calibrated PBR maps mapped to standard material slots.",
+  },
+  {
+    id: "pbr-calibration",
+    title: "Using 16-bit displacement and roughness maps in UE5",
+    category: "3d-assets",
+    content:
+      "All Onflow surfaces are captured with cross-polarized photogrammetry and calibrated for ACEScg. Set roughness and displacement textures to Linear / Non-Color space in Unreal Engine 5 or Blender.",
   },
   {
     id: "credit-usage",
-    title: "Understanding credit usage and billing cycles",
+    title: "How credits and free re-downloads work",
     category: "account-billing",
     content:
-      "Credits are deducted only on your first purchase of an asset or LOD package. Once owned, you can re-download any format or resolution from your Download Center at zero additional credit cost.",
+      "Credits are deducted once when you unlock an asset. After purchase, you can re-export any format, LOD level, or texture resolution from Downloads at zero additional credit cost.",
   },
   {
-    id: "figma-plugin",
-    title: "Setting up the Figma plugin for the first time",
+    id: "bridge-setup",
+    title: "Connecting Onflow Bridge to Blender and Unreal Engine",
     category: "api-integrations",
     content:
-      "Generate a personal developer token from the Left Panel API Integrations card, then paste it into the Onflow Bridge plugin for Blender, Unreal Engine, or Figma to import 3D assets directly into your scene.",
+      "Generate a personal API key from the Bridge API card in the portal sidebar, then paste it into the Onflow Bridge plugin preferences to stream assets directly into your scene.",
   },
   {
     id: "team-collab",
-    title: "Collaborating with team members on a project",
+    title: "Sharing a credit pool across a studio organization",
     category: "getting-started",
     content:
-      "Business and Developer accounts share an organization credit pool and asset library. All team downloads appear in real-time under Team Activity on your Portal Home.",
+      "Business workspaces share one credit balance and download archive. Switch between organizations from the top-left workspace switcher in the portal sidebar.",
+  },
+  {
+    id: "commercial-license",
+    title: "Standard vs Studio commercial licensing",
+    category: "licensing",
+    content:
+      "Standard licenses cover commercial games, films, and architectural visualization for teams up to 10 seats. Studio licenses extend seat counts and allow custom raw point-cloud delivery.",
+  },
+  {
+    id: "missing-textures",
+    title: "Fixing missing texture links after importing FBX",
+    category: "troubleshooting",
+    content:
+      "Extract the entire .zip archive before importing the FBX mesh so relative texture paths resolve automatically. In Blender, use File > External Data > Find Missing Files and select the /textures folder.",
   },
 ];
 
 const INITIAL_TICKETS: SupportTicket[] = [
   {
     id: "T-2026-8901",
-    title: "Unable to download 4K textures",
-    updatedAt: "Last updated 2 hours ago",
+    title: "8K EXR displacement map export timeout",
+    updatedAt: "2h ago",
     status: "Open",
-    priority: "High Priority",
-    category: "Download & Asset Issue",
+    priority: "High",
+    category: "3D assets & PBR",
+    messages: [
+      {
+        sender: "you",
+        text: "Exporting the 8K EXR bundle for White Marble Incense Burner timed out twice on Safari.",
+        time: "3h ago",
+      },
+      {
+        sender: "support",
+        text: "We verified the archive checksum and re-queued the CDN edge cache for your region. Please retry the 8K export and let us know if it completes.",
+        time: "2h ago",
+      },
+    ],
   },
   {
     id: "T-2026-8842",
-    title: "Billing inquiry for March",
-    updatedAt: "Last updated 2 days ago",
+    title: "VAT invoice adjustment for November top-up",
+    updatedAt: "2d ago",
     status: "Resolved",
-    priority: "Medium Priority",
-    category: "Billing & Credits",
+    priority: "Medium",
+    category: "Billing & credits",
+    messages: [
+      {
+        sender: "you",
+        text: "Please include our updated Vietnam Tax ID on invoice INV-2026-1119.",
+        time: "3d ago",
+      },
+      {
+        sender: "support",
+        text: "Updated Tax ID VN-0318294012 on your billing profile and regenerated the invoice.",
+        time: "2d ago",
+      },
+    ],
   },
   {
     id: "T-2026-8721",
-    title: "Feature request: Dark mode export",
-    updatedAt: "Last updated 1 week ago",
+    title: "USDZ scale factor in Apple Reality Composer",
+    updatedAt: "1w ago",
     status: "Closed",
-    priority: "Low Priority",
-    category: "Feature Request",
+    priority: "Low",
+    category: "Troubleshooting",
+    messages: [
+      {
+        sender: "you",
+        text: "Are USDZ exports authored in meters or centimeters?",
+        time: "1w ago",
+      },
+      {
+        sender: "support",
+        text: "All USDZ exports use metersPerUnit = 0.01 (centimeters) with real-world scanned dimensions.",
+        time: "1w ago",
+      },
+    ],
   },
 ];
 
@@ -92,42 +170,57 @@ export default function SupportCenterOverlay({
   initialTab = "knowledge",
 }: SupportCenterOverlayProps) {
   const [activeTab, setActiveTab] = useState<SupportTab>(initialTab);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Knowledge base state
+  // Knowledge base
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [expandedArticleId, setExpandedArticleId] = useState<string | null>(null);
+  const [expandedArticleId, setExpandedArticleId] = useState<string | null>(
+    "export-3d"
+  );
 
-  // Tickets state
+  // Tickets
   const [tickets, setTickets] = useState<SupportTicket[]>(INITIAL_TICKETS);
   const [statusFilter, setStatusFilter] = useState<"All" | "Open" | "Resolved" | "Closed">("All");
+  const [expandedTicketId, setExpandedTicketId] = useState<string | null>("T-2026-8901");
+  const [replyDraft, setReplyDraft] = useState("");
 
-  // Contact form state
-  const [issueCategory, setIssueCategory] = useState("Technical Support");
-  const [priorityLevel, setPriorityLevel] = useState("Medium");
+  // Contact form
+  const [issueCategory, setIssueCategory] = useState("3D assets & PBR");
+  const [priorityLevel, setPriorityLevel] = useState<"High" | "Medium" | "Low">("Medium");
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [attachedFile, setAttachedFile] = useState<string | null>(null);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [attachedFileName, setAttachedFileName] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen && initialTab) {
       setActiveTab(initialTab);
     }
   }, [isOpen, initialTab]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 2800);
+    setTimeout(() => setToastMsg(null), 2600);
   };
 
   const filteredArticles = ARTICLES.filter((art) => {
+    const q = searchQuery.trim().toLowerCase();
     const matchesSearch =
-      !searchQuery.trim() ||
-      art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      art.content.toLowerCase().includes(searchQuery.toLowerCase());
+      !q ||
+      art.title.toLowerCase().includes(q) ||
+      art.content.toLowerCase().includes(q);
     const matchesCategory = !selectedCategory || art.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -138,8 +231,8 @@ export default function SupportCenterOverlay({
 
   const handleSubmitTicket = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!subject.trim()) {
-      showToast("Please enter a subject for your request.");
+    if (!subject.trim() || !description.trim()) {
+      showToast("Enter both a subject and description");
       return;
     }
     const newTicket: SupportTicket = {
@@ -147,126 +240,182 @@ export default function SupportCenterOverlay({
       title: subject.trim(),
       updatedAt: "Just now",
       status: "Open",
-      priority:
-        priorityLevel === "High" || priorityLevel === "Critical"
-          ? "High Priority"
-          : priorityLevel === "Low"
-          ? "Low Priority"
-          : "Medium Priority",
+      priority: priorityLevel,
       category: issueCategory,
+      messages: [
+        {
+          sender: "you",
+          text: attachedFileName
+            ? `${description.trim()} (Attachment: ${attachedFileName})`
+            : description.trim(),
+          time: "Just now",
+        },
+      ],
     };
     setTickets((prev) => [newTicket, ...prev]);
+    setExpandedTicketId(newTicket.id);
     setSubject("");
     setDescription("");
-    setAttachedFile(null);
-    showToast(`Ticket ${newTicket.id} submitted!`);
+    setAttachedFileName(null);
+    showToast(`Ticket ${newTicket.id} created`);
     setActiveTab("tickets");
+  };
+
+  const handleSendReply = (ticketId: string) => {
+    if (!replyDraft.trim()) return;
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              updatedAt: "Just now",
+              status: t.status === "Closed" ? "Open" : t.status,
+              messages: [
+                ...t.messages,
+                { sender: "you", text: replyDraft.trim(), time: "Just now" },
+              ],
+            }
+          : t
+      )
+    );
+    setReplyDraft("");
+    showToast("Reply posted");
+  };
+
+  const handleToggleTicketStatus = (ticketId: string) => {
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              status: t.status === "Open" ? "Resolved" : "Open",
+              updatedAt: "Just now",
+            }
+          : t
+      )
+    );
+    showToast("Ticket status updated");
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#141926]/45 p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white flex flex-col h-[650px] max-h-[92vh] w-[800px] max-w-full overflow-hidden relative rounded-[20px] shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)]"
+        className="kumo-portal bg-[var(--color-kumo-canvas)] flex flex-col h-[640px] max-h-[90vh] w-[780px] max-w-full overflow-hidden relative rounded-[12px] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-md)]"
         onClick={(e) => e.stopPropagation()}
-        data-node-id="1220:13818"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Support"
       >
         {toastMsg && (
-          <div className="absolute top-[28px] right-[80px] z-30 bg-[#19213d] text-white text-[12px] font-medium px-[14px] py-[6px] rounded-[8px] shadow-md">
+          <div className="absolute top-4 right-16 z-30 bg-[var(--text-color-kumo-strong)] text-white text-[12px] font-medium px-3 py-1.5 rounded-[8px] shadow-sm">
             {toastMsg}
           </div>
         )}
 
         {/* Header */}
-        <div className="h-[109px] shrink-0 w-full flex items-center justify-between px-[32px]">
-          <div className="flex flex-col gap-[4px]">
-            <h2 className="font-['Manrope',sans-serif] font-medium leading-[36px] text-[#19213d] text-[24px]">
-              Support Center
+        <div className="h-[58px] shrink-0 w-full flex items-center justify-between px-6 border-b border-[var(--color-kumo-line)] bg-[var(--color-kumo-canvas)]">
+          <div className="flex items-baseline gap-2.5">
+            <h2 className="m-0 font-semibold text-[18px] leading-[24px] text-[var(--text-color-kumo-strong)]">
+              Support Portal
             </h2>
-            <p className="font-['Manrope',sans-serif] font-normal leading-[21px] text-[14px] text-[rgba(25,33,61,0.6)]">
-              We&apos;re here to help you with any questions.
-            </p>
+            <span className="text-[12px] text-[var(--text-color-kumo-subtle)] hidden sm:inline">
+              Documentation, tickets, and pipeline assistance
+            </span>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="bg-[#f2f4f7] hover:bg-[#e4e7ec] transition-colors rounded-full size-[32px] flex items-center justify-center cursor-pointer"
-            aria-label="Close Support Center"
+            className="size-8 rounded-[8px] bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] flex items-center justify-center text-[var(--text-color-kumo-subtle)] hover:text-[var(--text-color-kumo-default)] cursor-pointer transition-colors duration-150"
+            aria-label="Close support"
           >
-            <img alt="Close" className="size-[16px]" src="/assets/portal/b87f2.svg" />
+            <X size={15} strokeWidth={1.5} />
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="border-[#eaecf0] border-b border-solid h-[38px] shrink-0 w-full flex items-center gap-[32px] px-[32px]">
-          {[
-            { id: "knowledge" as const, label: "Knowledge Base" },
-            { id: "tickets" as const, label: "My Tickets" },
-            { id: "contact" as const, label: "Contact Support" },
-          ].map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className="relative h-[37px] flex items-start cursor-pointer"
-              >
-                <span
-                  className={`font-['Manrope',sans-serif] font-medium leading-[21px] text-[14px] transition-colors ${
-                    isActive ? "text-[#19213d]" : "text-[rgba(25,33,61,0.5)] hover:text-[#19213d]"
+        {/* Kumo Segmented Pill Tabs */}
+        <div className="border-b border-[var(--color-kumo-line)] py-2.5 shrink-0 w-full flex items-center px-6 bg-[var(--color-kumo-canvas)]">
+          <div
+            role="tablist"
+            className="inline-flex items-center h-9 rounded-[8px] bg-[var(--color-kumo-recessed)] p-0.5 gap-0.5"
+          >
+            {[
+              { id: "knowledge" as const, label: "Knowledge base" },
+              { id: "tickets" as const, label: `My tickets (${tickets.length})` },
+              { id: "contact" as const, label: "New request" },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`h-8 px-3 rounded-[6px] border-0 cursor-pointer text-[13px] transition-colors duration-150 ${
+                    isActive
+                      ? "bg-white text-[var(--text-color-kumo-strong)] font-medium shadow-[var(--shadow-kumo-xs)]"
+                      : "bg-transparent text-[var(--text-color-kumo-subtle)] font-normal hover:text-[var(--text-color-kumo-default)]"
                   }`}
                 >
-                  {tab.label}
-                </span>
-                {isActive && (
-                  <span className="absolute bg-[#19213d] h-[2px] left-0 right-0 bottom-0" />
-                )}
-              </button>
-            );
-          })}
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 min-h-0 w-full overflow-y-auto pt-[24px] px-[32px] pb-[24px]">
+        <div className="flex-1 min-h-0 w-full overflow-y-auto p-6">
           {/* TAB 1: KNOWLEDGE BASE */}
           {activeTab === "knowledge" && (
-            <div className="flex flex-col gap-[24px]">
-              {/* Search Bar */}
-              <div className="relative h-[50px] w-full">
-                <div className="absolute left-[16px] top-0 h-[50px] flex items-center pointer-events-none">
-                  <img alt="" className="size-[20px]" src="/assets/portal/3f128.svg" />
-                </div>
+            <div className="flex flex-col gap-6">
+              {/* Search */}
+              <div className="relative flex items-center h-10 bg-[#f5f6f8] border border-[#141926]/10 focus-within:bg-white focus-within:border-[#004bda] rounded-[8px] px-3 gap-2 transition-colors duration-150">
+                <Search size={15} strokeWidth={1.5} className="text-[#6c7488] shrink-0" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for articles, guides, and more..."
-                  className="bg-white border border-[#eaecf0] focus:border-[#004bda] outline-none h-[50px] w-full pl-[44px] pr-[16px] py-[12px] rounded-[12px] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] font-['Manrope',sans-serif] text-[16px] text-[#19213d] placeholder:text-[rgba(25,33,61,0.4)]"
+                  placeholder="Search guides, formats, or billing"
+                  className="bg-transparent border-0 outline-none w-full text-[13px] text-[#141926] placeholder:text-[#6c7488]"
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    aria-label="Clear search"
+                    className="text-[#6c7488] hover:text-[#141926] bg-transparent border-0 p-0 cursor-pointer"
+                  >
+                    <X size={14} strokeWidth={1.5} />
+                  </button>
+                )}
               </div>
 
-              {/* Browse by Category */}
-              <div className="flex flex-col gap-[12px]">
+              {/* Categories */}
+              <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-['Manrope',sans-serif] font-bold leading-[24px] text-[#19213d] text-[16px]">
-                    Browse by Category
+                  <h3 className="m-0 font-medium text-[14px] text-[#141926]">
+                    Topics
                   </h3>
                   {selectedCategory && (
                     <button
                       type="button"
                       onClick={() => setSelectedCategory(null)}
-                      className="text-[12px] font-medium text-[#004bda] hover:underline cursor-pointer"
+                      className="text-[12px] font-medium text-[#004bda] hover:underline bg-transparent border-0 p-0 cursor-pointer"
                     >
-                      Clear filter
+                      Clear topic
                     </button>
                   )}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-[12px]">
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                   {CATEGORIES.map((cat) => {
                     const isSelected = selectedCategory === cat.id;
+                    const Icon = cat.Icon;
+                    const count = ARTICLES.filter((a) => a.category === cat.id).length;
                     return (
                       <button
                         key={cat.id}
@@ -274,183 +423,220 @@ export default function SupportCenterOverlay({
                         onClick={() =>
                           setSelectedCategory(isSelected ? null : cat.id)
                         }
-                        className={`bg-white border text-left p-[17px] rounded-[12px] flex flex-col gap-[12px] transition-all cursor-pointer ${
+                        className={`text-left p-3 rounded-[10px] border flex items-center justify-between gap-2 cursor-pointer transition-colors duration-150 ${
                           isSelected
-                            ? "border-[#004bda] ring-1 ring-[#004bda]"
-                            : "border-[#eaecf0] hover:border-[#c9c9c9]"
+                            ? "border-[#004bda] bg-[#eef3ff]/60"
+                            : "border-[#141926]/10 bg-white hover:bg-[#f5f6f8]"
                         }`}
                       >
-                        <div className="flex items-center justify-between w-full">
-                          <div className={`${cat.bg} size-[36px] rounded-[8px] flex items-center justify-center`}>
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                              <path
-                                d="M2.25 4.5C2.25 3.67157 2.92157 3 3.75 3H7.5L9 4.5H14.25C15.0784 4.5 15.75 5.17157 15.75 6V13.5C15.75 14.3284 15.0784 15 14.25 15H3.75C2.92157 15 2.25 14.3284 2.25 13.5V4.5Z"
-                                stroke={cat.color}
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                          <img alt="" className="size-[16px]" src="/assets/portal/88afe.svg" />
-                        </div>
-                        <div>
-                          <p className="font-['Manrope',sans-serif] font-bold leading-[21px] text-[#19213d] text-[14px]">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Icon
+                            size={16}
+                            strokeWidth={1.5}
+                            className={isSelected ? "text-[#004bda] shrink-0" : "text-[#6c7488] shrink-0"}
+                          />
+                          <span className="text-[13px] font-medium text-[#141926] truncate">
                             {cat.title}
-                          </p>
-                          <p className="font-['Manrope',sans-serif] font-normal leading-[18px] text-[12px] text-[rgba(25,33,61,0.5)]">
-                            {cat.count}
-                          </p>
+                          </span>
                         </div>
+                        <span className="font-mono tabular-nums text-[11px] text-[#6c7488] shrink-0">
+                          {count}
+                        </span>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Popular Articles */}
-              <div className="flex flex-col gap-[12px]">
-                <h3 className="font-['Manrope',sans-serif] font-bold leading-[24px] text-[#19213d] text-[16px]">
-                  Popular Articles
+              {/* Articles */}
+              <div className="flex flex-col gap-2.5">
+                <h3 className="m-0 font-medium text-[14px] text-[#141926]">
+                  Articles
                 </h3>
-                <div className="flex flex-col gap-[8px]">
-                  {filteredArticles.map((art) => {
-                    const isExpanded = expandedArticleId === art.id;
-                    return (
-                      <div
-                        key={art.id}
-                        className="bg-white border border-[#eaecf0] rounded-[10px] overflow-hidden transition-all"
-                      >
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setExpandedArticleId(isExpanded ? null : art.id)
-                          }
-                          className="h-[47px] w-full px-[13px] flex items-center justify-between hover:bg-[#f8f9fa] cursor-pointer"
+                {filteredArticles.length === 0 ? (
+                  <p className="m-0 py-8 text-center text-[13px] text-[#6c7488]">
+                    No articles match your search
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {filteredArticles.map((art) => {
+                      const isExpanded = expandedArticleId === art.id;
+                      return (
+                        <div
+                          key={art.id}
+                          className="bg-white border border-[#141926]/10 rounded-[10px] overflow-hidden"
                         >
-                          <span className="font-['Manrope',sans-serif] font-medium leading-[21px] text-[#19213d] text-[14px]">
-                            {art.title}
-                          </span>
-                          <img
-                            alt=""
-                            className={`size-[16px] transition-transform ${
-                              isExpanded ? "rotate-90" : ""
-                            }`}
-                            src="/assets/portal/88afe.svg"
-                          />
-                        </button>
-                        {isExpanded && (
-                          <div className="px-[16px] pb-[14px] pt-[4px] border-t border-[#f2f4f7] bg-[#f8f9fa] font-['Manrope',sans-serif] text-[13px] leading-[20px] text-[rgba(25,33,61,0.75)]">
-                            {art.content}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedArticleId(isExpanded ? null : art.id)
+                            }
+                            className="w-full px-3.5 py-3 flex items-center justify-between gap-3 bg-transparent border-0 text-left hover:bg-[#f5f6f8] cursor-pointer transition-colors duration-150"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <FileText
+                                size={15}
+                                strokeWidth={1.5}
+                                className="text-[#6c7488] shrink-0"
+                              />
+                              <span className="text-[13px] font-medium text-[#141926]">
+                                {art.title}
+                              </span>
+                            </div>
+                            <ChevronRight
+                              size={15}
+                              strokeWidth={1.5}
+                              className={`text-[#6c7488] shrink-0 transition-transform duration-150 ${
+                                isExpanded ? "rotate-90" : ""
+                              }`}
+                            />
+                          </button>
+                          {isExpanded && (
+                            <div className="px-4 py-3 border-t border-[#141926]/8 bg-[#f5f6f8] text-[13px] leading-[20px] text-[#4e5669]">
+                              {art.content}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}
 
           {/* TAB 2: MY TICKETS */}
           {activeTab === "tickets" && (
-            <div className="flex flex-col gap-[20px]">
-              {/* Top Bar */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-[12px]">
-                  <h3 className="font-['Manrope',sans-serif] font-bold leading-[24px] text-[#19213d] text-[16px]">
-                    Your Support Tickets
-                  </h3>
-                  <div className="flex items-center gap-[6px]">
-                    {(["All", "Open", "Resolved", "Closed"] as const).map((st) => (
-                      <button
-                        key={st}
-                        type="button"
-                        onClick={() => setStatusFilter(st)}
-                        className={`px-[10px] py-[3px] rounded-full text-[11px] font-medium transition-colors cursor-pointer ${
-                          statusFilter === st
-                            ? "bg-[#19213d] text-white"
-                            : "bg-[#f2f4f7] text-[rgba(25,33,61,0.7)] hover:bg-[#e5e7eb]"
-                        }`}
-                      >
-                        {st}
-                      </button>
-                    ))}
-                  </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-1.5">
+                  {(["All", "Open", "Resolved", "Closed"] as const).map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => setStatusFilter(st)}
+                      className={`h-8 px-3 rounded-[8px] text-[12px] border cursor-pointer transition-colors duration-150 ${
+                        statusFilter === st
+                          ? "bg-[#141926] text-white border-[#141926]"
+                          : "bg-[#f5f6f8] text-[#4e5669] border-[#141926]/10 hover:text-[#141926]"
+                      }`}
+                    >
+                      {st}
+                    </button>
+                  ))}
                 </div>
+
                 <button
                   type="button"
                   onClick={() => setActiveTab("contact")}
-                  className="bg-[#004bda] hover:bg-[#003cb3] transition-colors h-[35.5px] px-[16px] rounded-[8px] font-['Manrope',sans-serif] font-medium text-[13px] text-white cursor-pointer"
+                  className="h-8 px-3 rounded-[8px] bg-[#004bda] hover:bg-[#003db3] text-white text-[12px] font-medium border-0 cursor-pointer transition-colors duration-150"
                 >
-                  New Ticket
+                  New ticket
                 </button>
               </div>
 
-              {/* Ticket Cards */}
-              <div className="flex flex-col gap-[12px]">
+              <div className="flex flex-col gap-2.5">
                 {filteredTickets.map((ticket) => {
-                  const isOpenStatus = ticket.status === "Open";
-                  const isResolved = ticket.status === "Resolved";
+                  const isExpanded = expandedTicketId === ticket.id;
                   return (
                     <div
                       key={ticket.id}
-                      className="bg-white border border-[#eaecf0] h-[94px] rounded-[12px] px-[21px] flex items-center justify-between hover:border-[#c9c9c9] transition-colors"
+                      className="bg-white border border-[#141926]/10 rounded-[10px] overflow-hidden"
                     >
-                      <div className="flex items-center gap-[16px]">
-                        <div
-                          className={`size-[40px] rounded-full flex items-center justify-center shrink-0 ${
-                            isOpenStatus
-                              ? "bg-[#fff8e6]"
-                              : isResolved
-                              ? "bg-[#e6fffa]"
-                              : "bg-[#f2f4f7]"
-                          }`}
-                        >
-                          <img
-                            alt=""
-                            className="size-[20px]"
-                            src={
-                              isOpenStatus
-                                ? "/assets/portal/e2ccf.svg"
-                                : isResolved
-                                ? "/assets/portal/80193.svg"
-                                : "/assets/portal/b2651.svg"
-                            }
-                          />
-                        </div>
-                        <div className="flex flex-col gap-[4px]">
-                          <h4 className="font-['Manrope',sans-serif] font-medium leading-[22.5px] text-[#19213d] text-[15px]">
-                            {ticket.title}
-                          </h4>
-                          <div className="flex items-center gap-[12px]">
-                            <span className="font-mono text-[13px] text-[rgba(25,33,61,0.6)]">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedTicketId(isExpanded ? null : ticket.id)
+                        }
+                        className="w-full px-4 py-3 flex items-center justify-between gap-3 bg-transparent border-0 text-left hover:bg-[#f5f6f8] cursor-pointer transition-colors duration-150"
+                      >
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[11px] text-[#6c7488]">
                               {ticket.id}
                             </span>
-                            <span className="bg-[rgba(25,33,61,0.3)] size-[4px] rounded-full" />
-                            <span className="font-['Manrope',sans-serif] text-[13px] text-[rgba(25,33,61,0.6)]">
-                              {ticket.updatedAt}
+                            <span className="text-[11px] text-[#6c7488]">
+                              · {ticket.category}
                             </span>
                           </div>
+                          <p className="m-0 text-[13px] font-medium text-[#141926] mt-0.5 truncate">
+                            {ticket.title}
+                          </p>
                         </div>
-                      </div>
 
-                      <div className="flex flex-col items-end gap-[8px]">
-                        <span
-                          className={`px-[10px] py-[4px] rounded-[6px] font-['Manrope',sans-serif] font-bold text-[12px] leading-[18px] ${
-                            isOpenStatus
-                              ? "bg-[#fff8e6] text-[#b78103]"
-                              : isResolved
-                              ? "bg-[#e6fffa] text-[#007f5f]"
-                              : "bg-[#f2f4f7] text-[rgba(25,33,61,0.6)]"
-                          }`}
-                        >
-                          {ticket.status}
-                        </span>
-                        <span className="font-['Manrope',sans-serif] font-medium text-[12px] text-[rgba(25,33,61,0.5)]">
-                          {ticket.priority}
-                        </span>
-                      </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span
+                            className={`font-mono text-[11px] ${
+                              ticket.status === "Open"
+                                ? "text-[#004bda]"
+                                : ticket.status === "Resolved"
+                                ? "text-[#16a34a]"
+                                : "text-[#6c7488]"
+                            }`}
+                          >
+                            {ticket.status}
+                          </span>
+                          <span className="font-mono text-[11px] text-[#6c7488]">
+                            {ticket.updatedAt}
+                          </span>
+                        </div>
+                      </button>
+
+                      {isExpanded && (
+                        <div className="px-4 pb-4 pt-3 border-t border-[#141926]/8 bg-[#f5f6f8] flex flex-col gap-3">
+                          <div className="flex flex-col gap-2">
+                            {ticket.messages.map((msg, idx) => (
+                              <div
+                                key={idx}
+                                className={`p-3 rounded-[8px] text-[13px] leading-[19px] ${
+                                  msg.sender === "you"
+                                    ? "bg-white border border-[#141926]/10 text-[#141926]"
+                                    : "bg-[#eef3ff]/70 border border-[#004bda]/15 text-[#141926]"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between text-[11px] text-[#6c7488] mb-1">
+                                  <span className="font-medium text-[#4e5669]">
+                                    {msg.sender === "you" ? "You" : "Onflow support"}
+                                  </span>
+                                  <span className="font-mono">{msg.time}</span>
+                                </div>
+                                <p className="m-0">{msg.text}</p>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 pt-1">
+                            <input
+                              type="text"
+                              value={replyDraft}
+                              onChange={(e) => setReplyDraft(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  handleSendReply(ticket.id);
+                                }
+                              }}
+                              placeholder="Write a reply"
+                              className="flex-1 min-w-[180px] h-9 px-3 rounded-[8px] bg-white border border-[#141926]/10 focus:border-[#004bda] outline-none text-[13px] text-[#141926]"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleSendReply(ticket.id)}
+                              className="h-9 px-3 rounded-[8px] bg-[#004bda] hover:bg-[#003db3] text-white text-[12px] font-medium border-0 inline-flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <Send size={13} strokeWidth={1.5} />
+                              <span>Reply</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleTicketStatus(ticket.id)}
+                              className="h-9 px-3 rounded-[8px] bg-white hover:bg-[#eef0f4] border border-[#141926]/10 text-[12px] font-medium text-[#141926] cursor-pointer"
+                            >
+                              {ticket.status === "Open" ? "Mark resolved" : "Reopen"}
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -458,131 +644,110 @@ export default function SupportCenterOverlay({
             </div>
           )}
 
-          {/* TAB 3: CONTACT SUPPORT */}
+          {/* TAB 3: NEW REQUEST */}
           {activeTab === "contact" && (
-            <form onSubmit={handleSubmitTicket} className="flex flex-col justify-between h-full gap-[20px]">
-              <div className="flex flex-col gap-[18px]">
-                {/* Info Banner */}
-                <div className="bg-[#f8f9fa] border border-[#eaecf0] rounded-[12px] px-[17px] py-[14px] flex items-center gap-[12px]">
-                  <img alt="" className="size-[20px] shrink-0" src="/assets/portal/e2cd0.svg" />
-                  <p className="font-['Manrope',sans-serif] text-[13px] leading-[19.5px] text-[rgba(25,33,61,0.7)]">
-                    Our support team typically responds within{" "}
-                    <span className="font-bold text-[#19213d]">2-4 business hours</span>. For urgent
-                    issues, please select &quot;High&quot; priority.
-                  </p>
-                </div>
+            <form onSubmit={handleSubmitTicket} className="flex flex-col gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-[12px] font-medium text-[#4e5669]">
+                    Topic
+                  </span>
+                  <select
+                    value={issueCategory}
+                    onChange={(e) => setIssueCategory(e.target.value)}
+                    className="h-10 px-3 rounded-[8px] border border-[#141926]/10 bg-white text-[13px] text-[#141926] outline-none"
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c.id} value={c.title}>
+                        {c.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-                {/* Dropdowns Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-[24px]">
-                  <div className="flex flex-col gap-[6px]">
-                    <label className="font-['Manrope',sans-serif] font-medium text-[13px] text-[rgba(25,33,61,0.7)]">
-                      Issue Category
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={issueCategory}
-                        onChange={(e) => setIssueCategory(e.target.value)}
-                        className="appearance-none bg-white border border-[#eaecf0] focus:border-[#004bda] outline-none h-[43px] w-full rounded-[8px] px-[16px] pr-[36px] font-['Manrope',sans-serif] text-[14px] text-[#19213d] cursor-pointer"
-                      >
-                        <option value="Technical Support">Technical Support</option>
-                        <option value="Billing & Credits">Billing & Credits</option>
-                        <option value="Download & Asset Issue">Download & Asset Issue</option>
-                        <option value="Feature Request">Feature Request</option>
-                        <option value="Other">Other</option>
-                      </select>
-                      <img
-                        alt=""
-                        src="/assets/portal/21533.svg"
-                        className="absolute right-[14px] top-[13.5px] size-[16px] pointer-events-none"
-                      />
-                    </div>
-                  </div>
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-[12px] font-medium text-[#4e5669]">
+                    Priority
+                  </span>
+                  <select
+                    value={priorityLevel}
+                    onChange={(e) =>
+                      setPriorityLevel(e.target.value as "High" | "Medium" | "Low")
+                    }
+                    className="h-10 px-3 rounded-[8px] border border-[#141926]/10 bg-white text-[13px] text-[#141926] outline-none"
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </label>
+              </div>
 
-                  <div className="flex flex-col gap-[6px]">
-                    <label className="font-['Manrope',sans-serif] font-medium text-[13px] text-[rgba(25,33,61,0.7)]">
-                      Priority Level
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={priorityLevel}
-                        onChange={(e) => setPriorityLevel(e.target.value)}
-                        className="appearance-none bg-white border border-[#eaecf0] focus:border-[#004bda] outline-none h-[43px] w-full rounded-[8px] px-[16px] pr-[36px] font-['Manrope',sans-serif] text-[14px] text-[#19213d] cursor-pointer"
-                      >
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
-                      </select>
-                      <img
-                        alt=""
-                        src="/assets/portal/21533.svg"
-                        className="absolute right-[14px] top-[13.5px] size-[16px] pointer-events-none"
-                      />
-                    </div>
-                  </div>
-                </div>
+              <label className="flex flex-col gap-1.5">
+                <span className="text-[12px] font-medium text-[#4e5669]">
+                  Subject
+                </span>
+                <input
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Short summary of the issue"
+                  className="h-10 px-3 rounded-[8px] border border-[#141926]/10 focus:border-[#004bda] outline-none text-[14px] text-[#141926]"
+                />
+              </label>
 
-                {/* Subject */}
-                <div className="flex flex-col gap-[6px]">
-                  <label className="font-['Manrope',sans-serif] font-medium text-[13px] text-[rgba(25,33,61,0.7)]">
-                    Subject
-                  </label>
+              <label className="flex flex-col gap-1.5">
+                <span className="text-[12px] font-medium text-[#4e5669]">
+                  Description
+                </span>
+                <textarea
+                  rows={4}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Include asset ID, software version, or order code"
+                  className="p-3 rounded-[8px] border border-[#141926]/10 focus:border-[#004bda] outline-none text-[14px] text-[#141926] resize-none"
+                />
+              </label>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#141926]/8">
+                <div className="flex items-center gap-2">
                   <input
-                    type="text"
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    placeholder="Brief summary of your issue"
-                    className="border border-[#eaecf0] focus:border-[#004bda] outline-none h-[43px] w-full rounded-[8px] px-[16px] font-['Manrope',sans-serif] text-[14px] text-[#19213d] placeholder:text-[rgba(25,33,61,0.5)]"
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) setAttachedFileName(f.name);
+                    }}
+                    className="hidden"
                   />
-                </div>
-
-                {/* Description */}
-                <div className="flex flex-col gap-[6px]">
-                  <label className="font-['Manrope',sans-serif] font-medium text-[13px] text-[rgba(25,33,61,0.7)]">
-                    Description
-                  </label>
-                  <textarea
-                    rows={4}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Please describe your issue in detail..."
-                    className="border border-[#eaecf0] focus:border-[#004bda] outline-none w-full rounded-[8px] px-[16px] py-[10px] font-['Manrope',sans-serif] text-[14px] text-[#19213d] placeholder:text-[rgba(25,33,61,0.5)] resize-none"
-                  />
-                </div>
-
-                {/* Attachment */}
-                <div className="flex items-center gap-[12px]">
                   <button
                     type="button"
-                    onClick={() => setAttachedFile("diagnostic_log_2026.zip")}
-                    className="flex items-center gap-[8px] font-['Manrope',sans-serif] font-bold text-[13px] text-[#004bda] hover:underline cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="h-9 px-3 rounded-[8px] bg-[#f5f6f8] hover:bg-[#eef0f4] border border-[#141926]/10 text-[12px] font-medium text-[#141926] inline-flex items-center gap-1.5 cursor-pointer"
                   >
-                    <img alt="" className="size-[16px]" src="/assets/portal/99133.svg" />
-                    <span>Attach screenshots or files</span>
+                    <Paperclip size={14} strokeWidth={1.5} className="text-[#6c7488]" />
+                    <span>Attach file</span>
                   </button>
-                  {attachedFile && (
-                    <span className="bg-[#f2f4f7] px-[10px] py-[2px] rounded-[6px] text-[12px] text-[#19213d] flex items-center gap-[6px]">
-                      {attachedFile}
+                  {attachedFileName && (
+                    <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-[#4e5669]">
+                      <span>{attachedFileName}</span>
                       <button
                         type="button"
-                        onClick={() => setAttachedFile(null)}
-                        className="text-[#eb5757] font-bold cursor-pointer"
+                        onClick={() => setAttachedFileName(null)}
+                        aria-label="Remove attachment"
+                        className="text-[#6c7488] hover:text-[#dc2626] bg-transparent border-0 p-0 cursor-pointer"
                       >
-                        ×
+                        <X size={12} strokeWidth={1.5} />
                       </button>
                     </span>
                   )}
                 </div>
-              </div>
 
-              {/* Submit Button */}
-              <div className="border-t border-[#eaecf0] pt-[16px] flex justify-end">
                 <button
                   type="submit"
-                  className="bg-[#004bda] hover:bg-[#003cb3] transition-colors h-[41px] px-[24px] rounded-[8px] flex items-center gap-[10px] font-['Manrope',sans-serif] font-bold text-[14px] text-white shadow-xs cursor-pointer"
+                  className="h-9 px-4 rounded-[8px] bg-[#004bda] hover:bg-[#003db3] text-white text-[13px] font-medium border-0 cursor-pointer transition-colors duration-150"
                 >
-                  <img alt="" className="size-[16px]" src="/assets/portal/af7ac.svg" />
-                  <span>Submit Request</span>
+                  Submit request
                 </button>
               </div>
             </form>

@@ -349,7 +349,7 @@ export const FEATURED_COLLECTIONS: FeaturedCollectionItem[] = [
     era: "Modern & Indochine",
     targetKey: "dinh-doc-lap",
     fallbackImages: [
-      "/assets/hero_img1.png",
+      "/assets/hero_img4.png",
       "/assets/feat_rect98.png",
       "/assets/feat_rect96.png",
       "/assets/feat_rect97.png",
@@ -475,7 +475,7 @@ export const DOCUMENTATION_SLIDES: ShowcaseDocItem[][] = [
       title: "Modular Concrete Facade & Brise-Soleil Assembly for ArchViz Projects",
       meta: "11 min read • BIM & 3D",
       targetKey: "dinh-doc-lap",
-      thumbnail: "/assets/hero_img1.png",
+      thumbnail: "/assets/hero_img4.png",
     },
     {
       id: "doc-7",
@@ -547,7 +547,7 @@ export const FORUM_SLIDES: ForumTopicItem[][] = [
       title: "Real-Time Urban District Walkthrough Built in Unreal Engine 5.4",
       meta: "42 replies • 1.2k views",
       targetKey: "kien-truc-sai-gon-gia-dinh",
-      thumbnail: "/assets/hero_img1.png",
+      thumbnail: "/assets/hero_img4.png",
     },
     {
       id: "forum-2",

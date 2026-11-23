@@ -248,79 +248,70 @@ export function HierarchySectionView({
 
   return (
     <main
-      className="flex-1 min-w-0 px-4 sm:px-6 xl:px-[36px] pt-6 sm:pt-8 pb-[68px] flex flex-col gap-[24px] relative"
+      className="flex-1 min-w-0 px-4 sm:px-6 xl:px-8 pt-6 pb-12 relative"
       data-name="Content"
     >
-      {/* Collection Banner */}
-      <section className="relative rounded-[14px] w-full max-w-[1540px] overflow-hidden bg-gradient-to-r from-[#131b35] via-[#1c2850] to-[#004bda]/85 text-white p-6 sm:px-[36px] sm:py-[28px] shadow-[0px_8px_24px_rgba(25,33,61,0.12)]">
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-7">
-            <div className="relative shrink-0 size-[68px] sm:size-[84px] rounded-[16px] bg-white/12 backdrop-blur-xs border border-white/20 flex items-center justify-center p-2">
-              <img
-                alt=""
-                className="block max-w-none size-full object-contain"
-                src="/assets/site_banner_circle.svg"
-                width={72}
-                height={72}
-              />
-            </div>
-
-            <div className="flex flex-1 flex-col gap-2 min-w-0">
+      <div className="w-full max-w-[1360px] mx-auto flex flex-col gap-5">
+      {/* Cloudflare Kumo Sub-page Collection Header Card */}
+      <section className="relative rounded-[8px] w-full overflow-hidden bg-white border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] p-5 sm:p-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1.5 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
+                <h1 className="font-semibold leading-[26px] text-[20px] tracking-[-0.01em] m-0 text-[var(--text-color-kumo-strong)]">
+                  {section.collectionTitle}
+                </h1>
+                <span className="rounded-full px-2 py-0.5 text-[12px] font-medium border border-[var(--color-kumo-fill)] bg-[var(--color-kumo-canvas)] text-[var(--text-color-kumo-default)] kumo-mono">
+                  {filteredItems.length.toLocaleString()} assets
+                </span>
                 {section.badge && (
-                  <span className="bg-white/15 backdrop-blur-xs border border-white/20 text-white font-sans font-semibold text-[11px] px-2.5 py-0.5 rounded-full">
+                  <span className="rounded-full px-2 py-0.5 text-[11px] font-medium border border-dashed border-[var(--color-kumo-brand)] text-[var(--text-color-kumo-link)]">
                     {section.badge}
                   </span>
                 )}
+              </div>
+
+              <p className="leading-[20px] text-[14px] text-[var(--text-color-kumo-subtle)] max-w-[780px] m-0">
+                {section.description}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1 text-[12px] text-[var(--text-color-kumo-subtle)]">
                 {section.province && (
-                  <span className="inline-flex items-center gap-1 bg-black/25 text-white/95 font-sans font-medium text-[11px] px-2.5 py-0.5 rounded-full">
-                    <MapPin size={11} />
-                    {section.province}
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin size={13} strokeWidth={1.5} />
+                    <span>{section.province}</span>
                   </span>
                 )}
                 {section.eraDetail && (
-                  <span className="inline-flex items-center gap-1 bg-black/25 text-white/95 font-sans font-medium text-[11px] px-2.5 py-0.5 rounded-full">
-                    <Clock size={11} />
-                    {section.eraDetail}
+                  <span className="inline-flex items-center gap-1">
+                    <Clock size={13} strokeWidth={1.5} />
+                    <span>{section.eraDetail}</span>
                   </span>
                 )}
                 {section.scanTech && (
-                  <span className="inline-flex items-center gap-1 bg-[#004bda]/70 border border-white/20 text-white font-sans font-medium text-[11px] px-2.5 py-0.5 rounded-full">
-                    <Scan size={11} />
-                    {section.scanTech}
+                  <span className="inline-flex items-center gap-1 kumo-mono">
+                    <Scan size={13} strokeWidth={1.5} />
+                    <span>{section.scanTech}</span>
                   </span>
                 )}
               </div>
-
-              <div className="flex flex-wrap items-baseline gap-3">
-                <h2 className="font-google-sans font-bold leading-[34px] text-[24px] sm:text-[30px] m-0 text-white">
-                  {section.collectionTitle}
-                </h2>
-                <span className="bg-white text-[#19213d] font-sans font-bold text-[12px] px-3 py-0.5 rounded-full shadow-xs">
-                  {filteredItems.length.toLocaleString()} Assets
-                </span>
-              </div>
-
-              <p className="font-sans font-normal leading-[21px] text-[13.5px] sm:text-[14.5px] text-white/85 max-w-[780px] m-0">
-                {section.description}
-              </p>
             </div>
           </div>
 
           {/* Quick Sub-Region / Sub-Monument Navigation Chips */}
           {section.level === "country" && (
-            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/15">
-              <span className="font-sans text-[11px] font-semibold text-white/75 mr-1">
-                Quick jump by Region:
+            <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-[var(--color-kumo-line)]">
+              <span className="text-[12px] text-[var(--text-color-kumo-subtle)] mr-1">
+                Regions:
               </span>
               {VIETNAM_REGIONS_AND_MONUMENTS.map((reg) => (
                 <button
                   key={reg.key}
                   type="button"
                   onClick={() => onNavigateHierarchy(reg.key)}
-                  className="bg-white/15 hover:bg-white text-white hover:text-[#19213d] border border-white/20 transition-colors cursor-pointer font-sans font-semibold text-[12px] px-3 py-1.5 rounded-full"
+                  className="h-7 px-2.5 rounded-[6px] bg-[var(--color-kumo-canvas)] hover:bg-[var(--color-kumo-tint)] text-[var(--text-color-kumo-default)] border border-[var(--color-kumo-line)] transition-colors cursor-pointer font-medium text-[12px]"
                 >
-                  {reg.name} • {reg.subLabel}
+                  {reg.name}
                 </button>
               ))}
             </div>
@@ -329,10 +320,10 @@ export function HierarchySectionView({
           {(section.level === "region" || section.level === "monument") &&
             section.subMonuments &&
             section.subMonuments.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/15">
-                <span className="font-sans text-[11px] font-semibold text-white/75 mr-1">
+              <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-[var(--color-kumo-line)]">
+                <span className="text-[12px] text-[var(--text-color-kumo-subtle)] mr-1">
                   {section.level === "region"
-                    ? "Locations in this region:"
+                    ? "Locations in region:"
                     : "Related locations:"}
                 </span>
                 {section.subMonuments.map((mon) => (
@@ -340,7 +331,7 @@ export function HierarchySectionView({
                     key={mon.key}
                     type="button"
                     onClick={() => onNavigateHierarchy(mon.key)}
-                    className="bg-white/15 hover:bg-white text-white hover:text-[#19213d] border border-white/20 transition-colors cursor-pointer font-sans font-medium text-[11.5px] px-3 py-1 rounded-full"
+                    className="h-7 px-2.5 rounded-[6px] bg-[var(--color-kumo-canvas)] hover:bg-[var(--color-kumo-tint)] text-[var(--text-color-kumo-default)] border border-[var(--color-kumo-line)] transition-colors cursor-pointer text-[12px]"
                   >
                     {mon.name}
                   </button>
@@ -350,14 +341,14 @@ export function HierarchySectionView({
         </div>
       </section>
 
-      {/* Unified Filter Menu Bar */}
+      {/* Cloudflare Kumo Unified Filter Menu Bar */}
       <section
         ref={filterBarRef}
-        className="flex flex-wrap gap-3 items-center justify-between relative w-full max-w-[1540px] min-h-[36px] shrink-0 z-20"
+        className="flex flex-wrap gap-2.5 items-center justify-between relative w-full min-h-9 shrink-0 z-20"
         data-name="Filter Menu"
       >
-        {/* Left: Breadcrumb Pill */}
-        <div className="bg-white border border-[#e4e6eb] flex flex-wrap min-h-[36px] items-center px-[14px] py-[6px] rounded-[10px] shrink-0 gap-1">
+        {/* Left: Breadcrumb */}
+        <div className="bg-white border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] flex flex-wrap min-h-9 items-center px-3 py-1.5 rounded-[8px] shrink-0 gap-1">
           {section.pathSegments.map((seg, idx) => {
             const isLast = idx === section.pathSegments.length - 1;
             return (
@@ -365,10 +356,10 @@ export function HierarchySectionView({
                 key={idx}
                 type="button"
                 onClick={() => onNavigateHierarchy(seg.targetKey)}
-                className={`border-0 bg-transparent p-0 cursor-pointer font-sans text-[12px] transition-colors ${
+                className={`border-0 bg-transparent p-0 cursor-pointer text-[12px] transition-colors ${
                   isLast
-                    ? "font-bold text-[#004bda]"
-                    : "font-semibold text-[rgba(25,33,61,0.7)] hover:text-[#004bda]"
+                    ? "font-semibold text-[var(--text-color-kumo-strong)]"
+                    : "font-normal text-[var(--text-color-kumo-subtle)] hover:text-[var(--text-color-kumo-default)]"
                 }`}
               >
                 {seg.label}
@@ -378,7 +369,7 @@ export function HierarchySectionView({
         </div>
 
         {/* Right: Filter Dropdowns + Sort + Grid Density + Reset */}
-        <div className="flex flex-wrap items-center justify-end gap-[8px] shrink-0">
+        <div className="flex flex-wrap items-center justify-end gap-1.5 shrink-0">
           {filterPills.map((fp) => {
             const isOpen = openFilter === fp.key;
             const currentVal = selectedFilters[fp.key];
@@ -388,23 +379,24 @@ export function HierarchySectionView({
                 <button
                   type="button"
                   onClick={() => setOpenFilter(isOpen ? null : fp.key)}
-                  className={`transition-colors cursor-pointer flex gap-[8px] h-[36px] items-center px-[12px] rounded-[10px] border text-[12px] font-sans whitespace-nowrap ${
+                  className={`transition-colors cursor-pointer flex gap-2 h-9 items-center px-3 rounded-[8px] border shadow-[var(--shadow-kumo-xs)] text-[13px] whitespace-nowrap ${
                     isActive
-                      ? "bg-[#eef4ff] text-[#004bda] border-[#004bda]/35 font-semibold"
-                      : "bg-white hover:bg-[#f6f7fa] text-[#19213d] border-[#e4e6eb] font-medium"
+                      ? "bg-[#3e8eff]/[.10] text-[var(--text-color-kumo-strong)] border-[#3e8eff]/40 font-medium"
+                      : "bg-white hover:bg-[var(--color-kumo-tint)] text-[var(--text-color-kumo-default)] border-[var(--color-kumo-line)] font-normal"
                   }`}
                 >
                   <span>{currentVal}</span>
                   <ChevronDown
                     size={13}
-                    className={`transition-transform duration-150 ${
+                    strokeWidth={1.5}
+                    className={`text-[var(--text-color-kumo-subtle)] transition-transform ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
 
                 {isOpen && (
-                  <div className="absolute right-0 top-[calc(100%+6px)] bg-white border border-[#e4e6eb] rounded-[10px] shadow-xl py-1.5 min-w-[220px] max-h-[300px] overflow-y-auto z-30">
+                  <div className="absolute right-0 top-[calc(100%+6px)] bg-white border border-[var(--color-kumo-line)] rounded-[8px] shadow-[var(--shadow-kumo-md)] py-1 min-w-[200px] max-h-[280px] overflow-y-auto z-30">
                     {FILTER_OPTIONS[fp.key].map((opt) => {
                       const isOptionSelected =
                         opt === currentVal ||
@@ -424,10 +416,10 @@ export function HierarchySectionView({
                             }));
                             setOpenFilter(null);
                           }}
-                          className={`w-full text-left px-3.5 py-2 text-[12px] font-sans border-0 cursor-pointer transition-colors ${
+                          className={`w-full text-left px-3 py-1.5 text-[13px] border-0 cursor-pointer transition-colors ${
                             isOptionSelected
-                              ? "bg-[#eef4ff] text-[#004bda] font-semibold"
-                              : "bg-transparent text-[#19213d] hover:bg-[#f6f7fa]"
+                              ? "bg-[var(--color-kumo-recessed)] text-[var(--text-color-kumo-strong)] font-medium"
+                              : "bg-transparent text-[var(--text-color-kumo-default)] hover:bg-[var(--color-kumo-tint)]"
                           }`}
                         >
                           {opt}
@@ -447,22 +439,23 @@ export function HierarchySectionView({
               onClick={() =>
                 setOpenFilter(openFilter === "sort" ? null : "sort")
               }
-              className="bg-white hover:bg-[#f6f7fa] border border-[#e4e6eb] transition-colors cursor-pointer flex gap-[6px] h-[36px] items-center px-[12px] rounded-[10px] text-[12px] font-sans"
+              className="bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] transition-colors cursor-pointer flex gap-1.5 h-9 items-center px-3 rounded-[8px] text-[13px]"
             >
-              <span className="text-[rgba(25,33,61,0.65)]">Sort by:</span>
-              <span className="text-[#19213d] font-semibold">
+              <span className="text-[var(--text-color-kumo-subtle)]">Sort:</span>
+              <span className="text-[var(--text-color-kumo-strong)] font-medium">
                 {selectedFilters.sort}
               </span>
               <ChevronDown
                 size={13}
-                className={`text-[rgba(25,33,61,0.6)] transition-transform duration-150 ${
+                strokeWidth={1.5}
+                className={`text-[var(--text-color-kumo-subtle)] transition-transform ${
                   openFilter === "sort" ? "rotate-180" : ""
                 }`}
               />
             </button>
 
             {openFilter === "sort" && (
-              <div className="absolute right-0 top-[calc(100%+6px)] bg-white border border-[#e4e6eb] rounded-[10px] shadow-xl py-1.5 min-w-[180px] z-30">
+              <div className="absolute right-0 top-[calc(100%+6px)] bg-white border border-[var(--color-kumo-line)] rounded-[8px] shadow-[var(--shadow-kumo-md)] py-1 min-w-[180px] z-30">
                 {FILTER_OPTIONS.sort.map((opt) => (
                   <button
                     key={opt}
@@ -474,10 +467,10 @@ export function HierarchySectionView({
                       }));
                       setOpenFilter(null);
                     }}
-                    className={`w-full text-left px-3.5 py-2 text-[12px] font-sans border-0 cursor-pointer transition-colors ${
+                    className={`w-full text-left px-3 py-1.5 text-[13px] border-0 cursor-pointer transition-colors ${
                       selectedFilters.sort === opt
-                        ? "bg-[#eef4ff] text-[#004bda] font-semibold"
-                        : "bg-transparent text-[#19213d] hover:bg-[#f6f7fa]"
+                        ? "bg-[var(--color-kumo-recessed)] text-[var(--text-color-kumo-strong)] font-medium"
+                        : "bg-transparent text-[var(--text-color-kumo-default)] hover:bg-[var(--color-kumo-tint)]"
                     }`}
                   >
                     {opt}
@@ -487,33 +480,33 @@ export function HierarchySectionView({
             )}
           </div>
 
-          {/* Grid Density Toggle (3 vs 4 columns) */}
-          <div className="hidden lg:flex items-center bg-white border border-[#e4e6eb] rounded-[10px] p-0.5 h-[36px]">
+          {/* Grid Density Toggle */}
+          <div className="hidden lg:flex items-center bg-[var(--color-kumo-recessed)] rounded-[8px] p-0.5 h-9 gap-0.5">
             <button
               type="button"
               onClick={() => setGridColumns(3)}
-              title="3-column grid (Large cards)"
+              title="3-column grid"
               aria-label="3-column layout"
-              className={`size-[28px] rounded-[7px] flex items-center justify-center border-0 cursor-pointer transition-colors ${
+              className={`size-8 rounded-[6px] flex items-center justify-center border-0 cursor-pointer transition-colors ${
                 gridColumns === 3
-                  ? "bg-[#eef4ff] text-[#004bda]"
-                  : "bg-transparent text-[rgba(25,33,61,0.6)] hover:text-[#19213d]"
+                  ? "bg-white text-[var(--text-color-kumo-strong)] shadow-[var(--shadow-kumo-xs)]"
+                  : "bg-transparent text-[var(--text-color-kumo-subtle)] hover:text-[var(--text-color-kumo-default)]"
               }`}
             >
-              <Columns3 size={14} />
+              <Columns3 size={14} strokeWidth={1.5} />
             </button>
             <button
               type="button"
               onClick={() => setGridColumns(4)}
-              title="4-column grid (Standard)"
+              title="4-column grid"
               aria-label="4-column layout"
-              className={`size-[28px] rounded-[7px] flex items-center justify-center border-0 cursor-pointer transition-colors ${
+              className={`size-8 rounded-[6px] flex items-center justify-center border-0 cursor-pointer transition-colors ${
                 gridColumns === 4
-                  ? "bg-[#eef4ff] text-[#004bda]"
-                  : "bg-transparent text-[rgba(25,33,61,0.6)] hover:text-[#19213d]"
+                  ? "bg-white text-[var(--text-color-kumo-strong)] shadow-[var(--shadow-kumo-xs)]"
+                  : "bg-transparent text-[var(--text-color-kumo-subtle)] hover:text-[var(--text-color-kumo-default)]"
               }`}
             >
-              <LayoutGrid size={14} />
+              <LayoutGrid size={14} strokeWidth={1.5} />
             </button>
           </div>
 
@@ -524,9 +517,9 @@ export function HierarchySectionView({
               onClick={() => setSelectedFilters(DEFAULT_FILTERS)}
               aria-label="Reset filters"
               title="Reset filters"
-              className="h-[36px] px-3 rounded-[10px] bg-white hover:bg-[#eef4ff] text-[#004bda] border border-[#004bda]/30 cursor-pointer flex items-center gap-1.5 font-sans font-semibold text-[12px] transition-colors"
+              className="h-9 px-3 rounded-[8px] bg-white hover:bg-[var(--color-kumo-tint)] text-[var(--text-color-kumo-link)] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] cursor-pointer flex items-center gap-1.5 font-medium text-[12px]"
             >
-              <RotateCcw size={13} />
+              <RotateCcw size={13} strokeWidth={1.5} />
               <span>Reset</span>
             </button>
           )}
@@ -534,7 +527,7 @@ export function HierarchySectionView({
       </section>
 
       {/* Endless Scroll Card Grid */}
-      <section className="w-full max-w-[1540px]">
+      <section className="w-full">
         <EndlessCardGrid
           items={filteredItems}
           resetKey={resetKey}
@@ -548,12 +541,12 @@ export function HierarchySectionView({
           emptyTitle={
             section.level === "bookmarks"
               ? "No saved assets yet"
-              : "No matching assets found"
+              : "No matching assets"
           }
           emptyDescription={
             section.level === "bookmarks"
-              ? "Click the Bookmark icon on any 3D model or surface card to save it here."
-              : "Try adjusting your period, format, or keyword filters."
+              ? "Save any 3D model or surface using its bookmark button"
+              : "Adjust your period, format, or keyword filters"
           }
           onResetFilters={
             hasActiveFilters
@@ -562,6 +555,7 @@ export function HierarchySectionView({
           }
         />
       </section>
+      </div>
     </main>
   );
 }

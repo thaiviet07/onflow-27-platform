@@ -1,7 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
+import {
+  AlertCircle,
+  Bookmark,
+  Box,
+  Calendar,
+  Check,
+  ChevronDown,
+  CreditCard,
+  ExternalLink,
+  HardDrive,
+  Info,
+  Layers,
+  MapPin,
+  Share2,
+  ShoppingBag,
+  Sparkles,
+} from "lucide-react";
 import { QuickPurchaseOverlay } from "./QuickPurchaseOverlay";
+import { CreditIcon } from "./CreditIcon";
 
 export type AssetDetailData = {
   id: string;
@@ -37,25 +55,25 @@ export type AssetDetailData = {
 export const DEFAULT_ASSET_DETAIL: AssetDetailData = {
   id: "1",
   title: "White Marble Incense Burner",
-  location: "Quang Tri Citadel ",
+  location: "Quang Tri Citadel",
   year: "1975",
   credits: "04 Credits",
   size: "4,68 MB",
-  lodsLabel: "LODs",
-  pathSegments: ["Vietnam", "/Centerside", "/Quang Tri Citadel", "/Object"],
-  formats: ["obj", "fbx"],
+  lodsLabel: "LOD0–LOD4",
+  pathSegments: ["Vietnam", "/Central Vietnam", "/Quang Tri Citadel", "/Object"],
+  formats: ["obj", "fbx", "glb", "usd"],
   geometryTriangles: "1,997 Triangles",
   geometryVertices: "1,976 Vertices",
   diskSize: "92.0 KB",
   memory: "0.20 MB",
   vram: "0.08 MB",
-  physicalSize: "25cm x 20cm x 17cm",
+  physicalSize: "25cm × 20cm × 17cm",
   lodsCount: "5",
-  textureFormat: "JPG",
+  textureFormat: "PNG / EXR 16-bit",
   publishDate: "March 15, 2025",
-  licenseTerms: "Standard License",
+  licenseTerms: "Standard Commercial",
   allowAiUsage: "No",
-  licenseOwner: "Onflow Co., Ltd",
+  licenseOwner: "Onflow Asia Co., Ltd",
 };
 
 const LOD_OPTIONS = [
@@ -66,18 +84,18 @@ const LOD_OPTIONS = [
 ];
 
 const TEXTURE_RESOLUTION_OPTIONS = [
-  "PNG 4096x4096",
-  "PNG 2048x2048",
-  "PNG 1024x1024",
-  "JPG 4096x4096",
+  "PNG 4096×4096",
+  "PNG 2048×2048",
+  "PNG 1024×1024",
+  "EXR 8192×8192 (16-bit)",
 ];
 
 const OBJECT_FORMAT_OPTIONS = ["USD", "FBX", "OBJ", "GLB"];
 
 const INITIAL_TEXTURE_MAPS = [
-  { id: "texture", label: "Texture Map", checked: true },
-  { id: "displacement", label: "Displacement Map", checked: true },
-  { id: "normal", label: "Normal Map", checked: true },
+  { id: "texture", label: "Albedo / Base Color", checked: true },
+  { id: "displacement", label: "Displacement (16-bit)", checked: true },
+  { id: "normal", label: "Normal Map (OpenGL)", checked: true },
   { id: "roughness", label: "Roughness Map", checked: true },
   { id: "ao", label: "Ambient Occlusion", checked: true },
   { id: "metallic", label: "Metallic Map", checked: false },
@@ -128,760 +146,492 @@ export function PanelModule({
     );
   };
 
-  const lodActiveStyle = isOverlay || openDropdown === "lod";
-
   return (
     <div
-      className="flex flex-col gap-[10px] items-start relative shrink-0 w-full max-w-[406px]"
+      className="kumo-portal flex flex-col gap-3 items-stretch relative shrink-0 w-full"
       data-name="Panel Module"
     >
-      {/* Module 1: Name & Icon + Path */}
-      <div
-        className={`flex flex-col gap-[4px] items-start relative shrink-0 w-full ${
-          isOverlay ? "drop-shadow-[0px_4px_1.4px_rgba(0,0,0,0.03)]" : ""
-        }`}
-        data-name="Module 1"
-      >
-        <div
-          className={`bg-white flex flex-col gap-[12px] items-start overflow-hidden p-[32px] relative rounded-tl-[10px] rounded-tr-[10px] shrink-0 w-full ${
-            !isOverlay ? "shadow-[0px_4px_2.8px_0px_rgba(0,0,0,0.03)]" : ""
-          }`}
-          data-name="Name&Icon"
-        >
-          {/* Labels: Location & Year */}
-          <div
-            className="flex gap-[10px] items-center relative shrink-0 w-full flex-wrap"
-            data-name="Labels"
-          >
-            <div className="bg-[#ededed] cursor-pointer flex gap-[10px] h-[32px] items-center justify-center min-h-[32px] overflow-hidden pl-[5px] pr-[15px] py-[5px] relative rounded-[16px] shrink-0">
-              <div className="relative shrink-0 size-[22px]">
-                <img
-                  alt=""
-                  className="block max-w-none"
-                  src="/assets/overlay_location_icon.svg"
-                  width={22}
-                  height={22}
-                />
-              </div>
-              <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[#101820] text-[12px] whitespace-nowrap">
-                <p className="leading-[12px] m-0">{asset.location}</p>
-              </div>
+      {/* Card 1: Asset Summary Header + Hierarchy Breadcrumb Path */}
+      <div className="bg-white rounded-[8px] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] overflow-hidden flex flex-col">
+        <div className="p-4 flex flex-col gap-3">
+          {/* Top Metadata Pills (Location & Year + Active Status) */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 h-6 px-2.5 rounded-full border border-[var(--color-kumo-fill)] bg-[var(--color-kumo-canvas)] text-[12px] font-medium text-[var(--text-color-kumo-default)]">
+                <MapPin size={12} className="text-[var(--text-color-kumo-subtle)]" />
+                <span className="truncate max-w-[160px]">{asset.location.trim()}</span>
+              </span>
+              <span className="inline-flex items-center gap-1 h-6 px-2 rounded-full border border-[var(--color-kumo-fill)] bg-white text-[11px] font-medium text-[var(--text-color-kumo-subtle)] kumo-mono">
+                <Calendar size={11} />
+                <span>{asset.year}</span>
+              </span>
             </div>
 
-            <div className="bg-[#ededed] flex gap-[10px] h-[32px] items-center justify-center min-h-[32px] overflow-hidden pl-[5px] pr-[15px] py-[5px] relative rounded-[16px] shrink-0">
-              <div className="relative shrink-0 size-[22px]">
-                <img
-                  alt=""
-                  className="block max-w-none"
-                  src="/assets/overlay_year_icon.svg"
-                  width={22}
-                  height={22}
-                />
-              </div>
-              <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[#101820] text-[12px] whitespace-nowrap">
-                <p className="leading-[12px] m-0">{asset.year}</p>
-              </div>
-            </div>
+            <span className="inline-flex items-center gap-1.5 h-5 px-2 py-0.5 rounded-full border border-[var(--color-kumo-hairline)] text-[11px] font-medium text-[var(--text-color-kumo-default)]">
+              <span className="size-1.5 rounded-full bg-[var(--color-kumo-success)]" />
+              <span>Calibrated</span>
+            </span>
           </div>
 
-          {/* Title */}
-          <div className="flex flex-col justify-center leading-[0] min-w-full not-italic relative shrink-0 text-[#19213d]">
-            <h2 className="leading-[30px] m-0 font-google-sans text-[24px] font-bold text-[#19213d]">{asset.title}</h2>
-          </div>
+          {/* Asset Title */}
+          <h2 className="m-0 text-[18px] leading-[24px] font-semibold tracking-[-0.01em] text-[var(--text-color-kumo-strong)]">
+            {asset.title}
+          </h2>
 
-          {/* Icons: 04 Credits, 4,68 MB, LODs */}
-          <div
-            className="flex gap-[25px] items-center relative shrink-0 w-full max-w-[338px]"
-            data-name="Icons"
-          >
-            <div className="flex gap-[3px] items-center relative shrink-0">
-              <div className="relative shrink-0 size-[16px]">
-                <img
-                  alt=""
-                  className="block max-w-none"
-                  src="/assets/overlay_credit_icon.svg"
-                  width={16}
-                  height={16}
-                />
-              </div>
-              <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[rgba(25,33,61,0.7)] whitespace-nowrap">
-                <p className="leading-[15.6px] m-0">{asset.credits}</p>
-              </div>
+          {/* Compact Metric Strip (Credits · Size · LODs) */}
+          <div className="grid grid-cols-3 divide-x divide-[var(--color-kumo-line)] rounded-[6px] bg-[var(--color-kumo-canvas)] border border-[var(--color-kumo-line)] py-2">
+            <div className="px-2.5 flex flex-col gap-0.5">
+              <span className="text-[11px] text-[var(--text-color-kumo-subtle)]">
+                Unlock cost
+              </span>
+              <span className="kumo-mono text-[13px] font-semibold text-[var(--text-color-kumo-strong)] inline-flex items-center gap-1">
+                {parsedCreditCost === 0 ? (
+                  <>
+                    <span>Free (0</span>
+                    <CreditIcon size={11} />
+                    <span>)</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{parsedCreditCost}</span>
+                    <CreditIcon size={11} />
+                  </>
+                )}
+              </span>
             </div>
-
-            <div className="flex gap-[3px] items-center relative shrink-0">
-              <div className="relative shrink-0 size-[16px]">
-                <img
-                  alt=""
-                  className="block max-w-none"
-                  src="/assets/overlay_size_icon.svg"
-                  width={16}
-                  height={16}
-                />
-              </div>
-              <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[rgba(25,33,61,0.7)] whitespace-nowrap">
-                <p className="leading-[15.6px] m-0">{asset.size}</p>
-              </div>
+            <div className="px-2.5 flex flex-col gap-0.5">
+              <span className="text-[11px] text-[var(--text-color-kumo-subtle)]">
+                Archive size
+              </span>
+              <span className="kumo-mono text-[13px] font-semibold text-[var(--text-color-kumo-strong)]">
+                {asset.size.replace(",", ".")}
+              </span>
             </div>
-
-            <div className="flex gap-[3px] items-center relative shrink-0">
-              <div className="relative shrink-0 size-[16px]">
-                <img
-                  alt=""
-                  className="block max-w-none"
-                  src="/assets/overlay_lods_badge_icon.svg"
-                  width={16}
-                  height={16}
-                />
-              </div>
-              <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[rgba(25,33,61,0.7)] whitespace-nowrap">
-                <p className="leading-[15.6px] m-0">{asset.lodsLabel}</p>
-              </div>
+            <div className="px-2.5 flex flex-col gap-0.5 min-w-0">
+              <span className="text-[11px] text-[var(--text-color-kumo-subtle)] whitespace-nowrap">
+                Hierarchy
+              </span>
+              <span className="kumo-mono text-[13px] font-semibold text-[var(--text-color-kumo-strong)] whitespace-nowrap">
+                {asset.lodsLabel || "LOD0–4"}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* O - Path */}
-        <div
-          className={`bg-white flex items-center min-h-[32px] overflow-hidden px-[32px] py-[4px] relative rounded-bl-[10px] rounded-br-[10px] shrink-0 w-full ${
-            !isOverlay ? "shadow-[0px_4px_2.8px_0px_rgba(0,0,0,0.03)]" : ""
-          }`}
-          data-name="O - Path"
-        >
-          <div className="flex flex-1 flex-row items-center self-stretch">
-            <div className="content-center flex flex-1 flex-wrap gap-0 h-full items-center min-w-0 relative">
-              {asset.pathSegments.map((seg, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-center relative shrink-0"
-                >
-                  <div className="flex flex-col font-sans font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[rgba(25,33,61,0.7)] whitespace-nowrap">
-                    <p className="leading-[15.6px] m-0">{seg}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* Bottom Path Bar */}
+        <div className="px-4 py-2 bg-[var(--color-kumo-canvas)] border-t border-[var(--color-kumo-line)] flex flex-wrap items-center gap-0.5 text-[11px] kumo-mono text-[var(--text-color-kumo-subtle)]">
+          {asset.pathSegments.map((seg, i) => (
+            <span
+              key={i}
+              className={
+                i === asset.pathSegments.length - 1
+                  ? "text-[var(--text-color-kumo-strong)] font-medium"
+                  : ""
+              }
+            >
+              {seg}
+            </span>
+          ))}
         </div>
       </div>
 
-      {/* Module 2: Item selection module */}
-      <div
-        className="bg-white flex flex-col items-center justify-center p-[32px] relative rounded-[10px] shadow-[0px_4px_2.8px_0px_rgba(0,0,0,0.03)] shrink-0 w-full"
-        data-name="Item selection module"
-      >
-        <div
-          className="flex flex-col gap-[15px] items-start relative shrink-0 w-full max-w-[342px]"
-          data-name="Buttons"
-        >
-          {/* Setting Dropdowns */}
-          <div
-            className="flex flex-col gap-[4px] items-end relative shrink-0 w-full"
-            data-name="Setting Dropdown"
-          >
-            {/* 1. LODs Selection */}
-            <div className="relative w-full">
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenDropdown(openDropdown === "lod" ? null : "lod")
-                }
-                className={`cursor-pointer border border-solid flex items-center justify-between overflow-hidden px-[32px] py-[12px] relative rounded-[10px] shrink-0 w-full transition-colors ${
-                  lodActiveStyle
-                    ? "border-[#004bda]"
-                    : "bg-white border-[#c9c9c9] hover:border-[#19213d]/40"
-                }`}
-                style={
-                  lodActiveStyle
-                    ? {
-                        backgroundImage:
-                          "linear-gradient(90deg, rgba(78, 72, 200, 0.1) 0%, rgba(78, 72, 200, 0.1) 100%), linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%)",
-                      }
-                    : undefined
-                }
-                data-name="LODs Selection"
-              >
-                <div className="flex gap-[7px] items-center relative shrink-0 w-[142px]">
-                  <div className="h-[16px] overflow-hidden relative shrink-0 w-[18px]">
-                    <div className="absolute left-[1px] size-[16px] top-0">
-                      <img
-                        alt=""
-                        className="block max-w-none"
-                        src={
-                          lodActiveStyle
-                            ? "/assets/overlay_lods_select_blue.svg"
-                            : "/assets/b2_lods_select_dark.svg"
-                        }
-                        width={16}
-                        height={16}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-col font-sans font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[rgba(25,33,61,0.7)] text-left whitespace-nowrap">
-                    <p className="leading-[15.6px] m-0">Level Of Details</p>
-                  </div>
-                </div>
-                <div className="flex flex-1 gap-[5px] items-center justify-end min-w-0 relative">
-                  <div className="flex flex-1 flex-col font-sans font-normal justify-center leading-[0] min-w-0 not-italic relative text-[12px] text-[rgba(25,33,61,0.7)] text-right">
-                    <p className="leading-[15.6px] m-0">{selectedLod}</p>
-                  </div>
-                  <div className="overflow-hidden relative shrink-0 size-[12px] flex items-center justify-center">
-                    <img
-                      alt=""
-                      className={`block max-w-none transition-transform ${
-                        openDropdown === "lod" ? "rotate-180" : ""
-                      }`}
-                      src="/assets/overlay_dropdown_arrow.svg"
-                      width={10}
-                      height={6}
-                    />
-                  </div>
-                </div>
-              </button>
+      {/* Card 2: Export Configuration & Purchase Action (Cloudflare Kumo Control Card) */}
+      <div className="bg-white rounded-[8px] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] p-4 flex flex-col gap-3.5">
+        <div className="flex items-center justify-between">
+          <span className="text-[13px] font-semibold text-[var(--text-color-kumo-strong)]">
+            Export configuration
+          </span>
+          <span className="text-[11px] text-[var(--text-color-kumo-subtle)] kumo-mono inline-flex items-center gap-1">
+            <span>Re-downloads: 0</span>
+            <CreditIcon size={10} />
+          </span>
+        </div>
 
-              {openDropdown === "lod" && (
-                <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white border border-[#c9c9c9] rounded-[10px] shadow-md z-30 py-[4px] overflow-hidden">
-                  {LOD_OPTIONS.map((opt) => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => {
-                        setSelectedLod(opt);
-                        setOpenDropdown(null);
-                      }}
-                      className={`w-full text-left px-[32px] py-[8px] text-[12px] font-sans cursor-pointer border-0 transition-colors ${
-                        selectedLod === opt
-                          ? "bg-[#004bda]/10 text-[#004bda] font-semibold"
-                          : "bg-white text-[#19213d] hover:bg-black/[0.04]"
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 2. Texture Selection */}
-            <div className="relative w-full">
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenDropdown(
-                    openDropdown === "texture" ? null : "texture"
-                  )
-                }
-                className={`bg-white border border-solid cursor-pointer flex items-center justify-between overflow-hidden px-[32px] py-[12px] relative rounded-[10px] shrink-0 w-full transition-colors ${
-                  openDropdown === "texture"
-                    ? "border-[#004bda]"
-                    : "border-[#c9c9c9] hover:border-[#19213d]/40"
-                }`}
-                data-name="Texture Selection"
-              >
-                <div className="flex gap-[7px] items-center relative shrink-0">
-                  <div className="h-[16px] relative shrink-0 w-[18px]">
-                    <img
-                      alt=""
-                      className="block max-w-none"
-                      src="/assets/overlay_texture_select.svg"
-                      width={18}
-                      height={16}
-                    />
-                  </div>
-                  <div className="flex flex-col font-sans font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[rgba(25,33,61,0.7)] text-left whitespace-nowrap">
-                    <p className="leading-[15.6px] m-0">Texture Resolutions</p>
-                  </div>
-                </div>
-                <div className="flex flex-1 gap-[5px] items-center justify-end min-w-0 relative">
-                  <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[rgba(25,33,61,0.7)] text-right w-[115px]">
-                    <p className="leading-[15.6px] m-0">{selectedTextureRes}</p>
-                  </div>
-                  <div className="overflow-hidden relative shrink-0 size-[12px] flex items-center justify-center">
-                    <img
-                      alt=""
-                      className={`block max-w-none transition-transform ${
-                        openDropdown === "texture" ? "rotate-180" : ""
-                      }`}
-                      src="/assets/overlay_dropdown_arrow.svg"
-                      width={10}
-                      height={6}
-                    />
-                  </div>
-                </div>
-              </button>
-
-              {openDropdown === "texture" && (
-                <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white border border-[#c9c9c9] rounded-[10px] shadow-md z-30 py-[4px] overflow-hidden">
-                  {TEXTURE_RESOLUTION_OPTIONS.map((opt) => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => {
-                        setSelectedTextureRes(opt);
-                        setOpenDropdown(null);
-                      }}
-                      className={`w-full text-left px-[32px] py-[8px] text-[12px] font-sans cursor-pointer border-0 transition-colors ${
-                        selectedTextureRes === opt
-                          ? "bg-[#004bda]/10 text-[#004bda] font-semibold"
-                          : "bg-white text-[#19213d] hover:bg-black/[0.04]"
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 3. Object Format Selection */}
-            <div className="relative w-full">
-              <button
-                type="button"
-                onClick={() =>
-                  setOpenDropdown(openDropdown === "format" ? null : "format")
-                }
-                className={`bg-white border border-solid cursor-pointer flex items-center justify-between overflow-hidden px-[32px] py-[12px] relative rounded-[10px] shrink-0 w-full transition-colors ${
-                  openDropdown === "format"
-                    ? "border-[#004bda]"
-                    : "border-[#c9c9c9] hover:border-[#19213d]/40"
-                }`}
-                data-name="Object Format Selection"
-              >
-                <div className="flex gap-[7px] items-center relative shrink-0">
-                  <div className="h-[16px] overflow-hidden relative shrink-0 w-[18px] flex items-center justify-center">
-                    <img
-                      alt=""
-                      className="block max-w-none"
-                      src="/assets/overlay_format_select.svg"
-                      width={15.4}
-                      height={15.4}
-                    />
-                  </div>
-                  <div className="flex flex-col font-sans font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[12px] text-[rgba(25,33,61,0.7)] text-left whitespace-nowrap">
-                    <p className="leading-[15.6px] m-0">Object Format</p>
-                  </div>
-                </div>
-                <div className="flex flex-1 gap-[5px] items-center justify-end min-w-0 relative">
-                  <div className="flex flex-1 flex-col font-sans font-normal justify-center leading-[0] min-w-0 not-italic relative text-[12px] text-[rgba(25,33,61,0.7)] text-right">
-                    <p className="leading-[15.6px] m-0">
-                      {selectedObjectFormat}
-                    </p>
-                  </div>
-                  <div className="overflow-hidden relative shrink-0 size-[12px] flex items-center justify-center">
-                    <img
-                      alt=""
-                      className={`block max-w-none transition-transform ${
-                        openDropdown === "format" ? "rotate-180" : ""
-                      }`}
-                      src="/assets/overlay_dropdown_arrow.svg"
-                      width={10}
-                      height={6}
-                    />
-                  </div>
-                </div>
-              </button>
-
-              {openDropdown === "format" && (
-                <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white border border-[#c9c9c9] rounded-[10px] shadow-md z-30 py-[4px] overflow-hidden">
-                  {OBJECT_FORMAT_OPTIONS.map((opt) => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => {
-                        setSelectedObjectFormat(opt);
-                        setOpenDropdown(null);
-                      }}
-                      className={`w-full text-left px-[32px] py-[8px] text-[12px] font-sans cursor-pointer border-0 transition-colors ${
-                        selectedObjectFormat === opt
-                          ? "bg-[#004bda]/10 text-[#004bda] font-semibold"
-                          : "bg-white text-[#19213d] hover:bg-black/[0.04]"
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Payment Buttons */}
-          <div
-            className="flex flex-col gap-[6px] items-end relative shrink-0 w-full"
-            data-name="Payment"
-          >
+        {/* 3 Kumo Selector Rows */}
+        <div className="flex flex-col gap-2">
+          {/* 1. Level of Detail */}
+          <div className="relative">
             <button
               type="button"
-              onClick={() => setPurchaseModalOpen(true)}
-              className="bg-[#004bda] hover:bg-[#003eb5] transition-colors cursor-pointer flex h-[40px] items-center justify-center overflow-hidden relative rounded-[10px] shrink-0 w-full border-0"
-              data-name="Purchase Button"
+              onClick={() =>
+                setOpenDropdown(openDropdown === "lod" ? null : "lod")
+              }
+              className={`w-full h-9 px-3 rounded-[8px] border flex items-center justify-between gap-2 text-[13px] cursor-pointer transition-colors ${
+                openDropdown === "lod"
+                  ? "bg-[#3e8eff]/[.06] border-[var(--color-kumo-brand)] text-[var(--text-color-kumo-strong)]"
+                  : "bg-white hover:bg-[var(--color-kumo-tint)] border-[var(--color-kumo-line)] text-[var(--text-color-kumo-default)]"
+              }`}
             >
-              <div className="flex flex-col font-sans font-bold justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-white text-center whitespace-nowrap">
-                <p className="leading-[15.6px] m-0">
-                  {purchased
-                    ? "Purchased (Ready to download)"
-                    : `Quick purchase (-${parsedCreditCost} credits)`}
-                </p>
-              </div>
+              <span className="flex items-center gap-2 text-[var(--text-color-kumo-subtle)]">
+                <Layers size={14} strokeWidth={1.5} />
+                <span>Geometry LOD</span>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium text-[var(--text-color-kumo-strong)] kumo-mono text-[12px]">
+                <span>{selectedLod}</span>
+                <ChevronDown
+                  size={13}
+                  className={`text-[var(--text-color-kumo-subtle)] transition-transform ${
+                    openDropdown === "lod" ? "rotate-180" : ""
+                  }`}
+                />
+              </span>
             </button>
 
-            <div className="flex items-center justify-between relative shrink-0 w-full gap-[8px]">
-              {isOverlay ? (
-                <button
-                  type="button"
-                  onClick={onExpandToPage}
-                  className="bg-[#ededed] hover:bg-[#e2e2e2] transition-colors cursor-pointer flex gap-[10px] h-[40px] items-center justify-center overflow-hidden relative rounded-[10px] shrink-0 w-[294px] border-0"
-                >
-                  <div className="relative shrink-0 size-[24px]">
-                    <img
-                      alt=""
-                      className="block max-w-none"
-                      src="/assets/overlay_view_details_icon.svg"
-                      width={24}
-                      height={24}
-                    />
-                  </div>
-                  <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-[#19213d] text-left whitespace-nowrap">
-                    <p className="leading-[15.6px] m-0">View Details</p>
-                  </div>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setAddedToCart(!addedToCart)}
-                  className="bg-[#ededed] hover:bg-[#e2e2e2] transition-colors cursor-pointer flex h-[40px] items-center justify-center overflow-hidden relative rounded-[10px] shrink-0 w-[294px] border-0"
-                >
-                  <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[#101820] text-[14px] text-center whitespace-nowrap">
-                    <p className="leading-[15.6px] m-0">
-                      {addedToCart ? "Added to cart ✓" : "Add to cart"}
-                    </p>
-                  </div>
-                </button>
-              )}
+            {openDropdown === "lod" && (
+              <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white border border-[var(--color-kumo-line)] rounded-[8px] shadow-[var(--shadow-kumo-md)] z-30 py-1 overflow-hidden">
+                {LOD_OPTIONS.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => {
+                      setSelectedLod(opt);
+                      setOpenDropdown(null);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-[12px] cursor-pointer border-0 flex items-center justify-between transition-colors ${
+                      selectedLod === opt
+                        ? "bg-[var(--color-kumo-recessed)] text-[var(--text-color-kumo-strong)] font-medium"
+                        : "bg-white text-[var(--text-color-kumo-default)] hover:bg-[var(--color-kumo-tint)]"
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {selectedLod === opt && (
+                      <Check size={13} className="text-[var(--color-kumo-brand)]" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
+          {/* 2. Texture Resolution */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() =>
+                setOpenDropdown(openDropdown === "texture" ? null : "texture")
+              }
+              className={`w-full h-9 px-3 rounded-[8px] border flex items-center justify-between gap-2 text-[13px] cursor-pointer transition-colors ${
+                openDropdown === "texture"
+                  ? "bg-[#3e8eff]/[.06] border-[var(--color-kumo-brand)] text-[var(--text-color-kumo-strong)]"
+                  : "bg-white hover:bg-[var(--color-kumo-tint)] border-[var(--color-kumo-line)] text-[var(--text-color-kumo-default)]"
+              }`}
+            >
+              <span className="flex items-center gap-2 text-[var(--text-color-kumo-subtle)]">
+                <Sparkles size={14} strokeWidth={1.5} />
+                <span>Texture maps</span>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium text-[var(--text-color-kumo-strong)] kumo-mono text-[12px]">
+                <span>{selectedTextureRes}</span>
+                <ChevronDown
+                  size={13}
+                  className={`text-[var(--text-color-kumo-subtle)] transition-transform ${
+                    openDropdown === "texture" ? "rotate-180" : ""
+                  }`}
+                />
+              </span>
+            </button>
+
+            {openDropdown === "texture" && (
+              <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white border border-[var(--color-kumo-line)] rounded-[8px] shadow-[var(--shadow-kumo-md)] z-30 py-1 overflow-hidden">
+                {TEXTURE_RESOLUTION_OPTIONS.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => {
+                      setSelectedTextureRes(opt);
+                      setOpenDropdown(null);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-[12px] cursor-pointer border-0 flex items-center justify-between transition-colors ${
+                      selectedTextureRes === opt
+                        ? "bg-[var(--color-kumo-recessed)] text-[var(--text-color-kumo-strong)] font-medium"
+                        : "bg-white text-[var(--text-color-kumo-default)] hover:bg-[var(--color-kumo-tint)]"
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {selectedTextureRes === opt && (
+                      <Check size={13} className="text-[var(--color-kumo-brand)]" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 3. Object Format */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() =>
+                setOpenDropdown(openDropdown === "format" ? null : "format")
+              }
+              className={`w-full h-9 px-3 rounded-[8px] border flex items-center justify-between gap-2 text-[13px] cursor-pointer transition-colors ${
+                openDropdown === "format"
+                  ? "bg-[#3e8eff]/[.06] border-[var(--color-kumo-brand)] text-[var(--text-color-kumo-strong)]"
+                  : "bg-white hover:bg-[var(--color-kumo-tint)] border-[var(--color-kumo-line)] text-[var(--text-color-kumo-default)]"
+              }`}
+            >
+              <span className="flex items-center gap-2 text-[var(--text-color-kumo-subtle)]">
+                <Box size={14} strokeWidth={1.5} />
+                <span>Object format</span>
+              </span>
+              <span className="flex items-center gap-1.5 font-medium text-[var(--text-color-kumo-strong)] kumo-mono text-[12px]">
+                <span>{selectedObjectFormat}</span>
+                <ChevronDown
+                  size={13}
+                  className={`text-[var(--text-color-kumo-subtle)] transition-transform ${
+                    openDropdown === "format" ? "rotate-180" : ""
+                  }`}
+                />
+              </span>
+            </button>
+
+            {openDropdown === "format" && (
+              <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white border border-[var(--color-kumo-line)] rounded-[8px] shadow-[var(--shadow-kumo-md)] z-30 py-1 overflow-hidden">
+                {OBJECT_FORMAT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => {
+                      setSelectedObjectFormat(opt);
+                      setOpenDropdown(null);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-[12px] cursor-pointer border-0 flex items-center justify-between transition-colors ${
+                      selectedObjectFormat === opt
+                        ? "bg-[var(--color-kumo-recessed)] text-[var(--text-color-kumo-strong)] font-medium"
+                        : "bg-white text-[var(--text-color-kumo-default)] hover:bg-[var(--color-kumo-tint)]"
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {selectedObjectFormat === opt && (
+                      <Check size={13} className="text-[var(--color-kumo-brand)]" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Primary & Secondary Action Buttons */}
+        <div className="flex flex-col gap-2 pt-1">
+          <button
+            type="button"
+            onClick={() => setPurchaseModalOpen(true)}
+            className="h-9 w-full rounded-[8px] kumo-btn-primary text-[13px] font-medium flex items-center justify-center gap-2 cursor-pointer"
+            data-name="Purchase Button"
+          >
+            <CreditCard size={14} strokeWidth={1.5} />
+            <span>
+              {purchased
+                ? `Export ${selectedObjectFormat} archive (Owned)`
+                : parsedCreditCost === 0
+                ? `Download Free (${selectedObjectFormat})`
+                : `Quick purchase (−${parsedCreditCost} credits)`}
+            </span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            {isOverlay ? (
               <button
                 type="button"
-                onClick={() => setBookmarked(!bookmarked)}
-                aria-label="Bookmark item"
-                className={`relative shrink-0 size-[40px] cursor-pointer border-0 bg-transparent p-0 rounded-[10px] transition-opacity ${
-                  bookmarked ? "ring-2 ring-[#004bda]" : "hover:opacity-85"
+                onClick={onExpandToPage}
+                className="flex-1 h-9 px-3 rounded-[8px] bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] text-[13px] font-medium text-[var(--text-color-kumo-default)] inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <ExternalLink size={14} strokeWidth={1.5} className="text-[var(--text-color-kumo-subtle)]" />
+                <span>Open full inspection view</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAddedToCart(!addedToCart)}
+                className={`flex-1 h-9 px-3 rounded-[8px] border shadow-[var(--shadow-kumo-xs)] text-[13px] font-medium inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors ${
+                  addedToCart
+                    ? "bg-[#3e8eff]/[.10] border-[#3e8eff]/40 text-[var(--text-color-kumo-strong)]"
+                    : "bg-white hover:bg-[var(--color-kumo-tint)] border-[var(--color-kumo-line)] text-[var(--text-color-kumo-default)]"
                 }`}
               >
-                <img
-                  alt=""
-                  className="block max-w-none"
-                  src="/assets/overlay_bookmark_btn.svg"
-                  width={40}
-                  height={40}
-                />
+                {addedToCart ? (
+                  <>
+                    <Check size={14} strokeWidth={1.75} className="text-[var(--text-color-kumo-success)]" />
+                    <span>Queued in cart</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag size={14} strokeWidth={1.5} className="text-[var(--text-color-kumo-subtle)]" />
+                    <span>Add to export queue</span>
+                  </>
+                )}
               </button>
-            </div>
-          </div>
+            )}
 
-          {/* Note box */}
-          <div className="bg-white border-[0.3px] border-[rgba(25,33,61,0.7)] border-solid flex items-start overflow-hidden p-[6px] relative rounded-[5px] shrink-0 w-full">
-            <div className="flex flex-1 flex-col font-sans font-normal justify-center leading-[0] min-w-0 not-italic relative text-[rgba(25,33,61,0.7)]">
-              <p className="text-[12px] m-0">
-                <span className="font-sans font-bold leading-[15.6px] not-italic">
-                  ⓘ Note:
-                </span>
-                <span className="leading-[15.6px]">
-                  {" "}
-                  LOD options are fixed after purchase and cannot be changed
-                  during downloads.
-                </span>
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={() => setBookmarked(!bookmarked)}
+              aria-label="Bookmark item"
+              title={bookmarked ? "Saved in bookmarks" : "Save bookmark"}
+              className={`size-9 rounded-[8px] border shadow-[var(--shadow-kumo-xs)] flex items-center justify-center cursor-pointer transition-colors shrink-0 ${
+                bookmarked
+                  ? "bg-[var(--color-kumo-recessed)] border-[var(--color-kumo-brand)] text-[var(--text-color-kumo-strong)]"
+                  : "bg-white hover:bg-[var(--color-kumo-tint)] border-[var(--color-kumo-line)] text-[var(--text-color-kumo-subtle)] hover:text-[var(--text-color-kumo-default)]"
+              }`}
+            >
+              <Bookmark
+                size={15}
+                strokeWidth={1.5}
+                className={bookmarked ? "fill-current" : ""}
+              />
+            </button>
           </div>
+        </div>
+
+        {/* Grey Kumo Info Notice */}
+        <div className="rounded-[6px] bg-[var(--color-kumo-recessed)] px-3 py-2 flex items-start gap-2 text-[12px] text-[var(--text-color-kumo-subtle)]">
+          <Info size={14} className="text-[var(--text-color-kumo-default)] shrink-0 mt-0.5" />
+          <span>
+            Unlocked assets include unlimited free re-downloads across all LODs and resolutions in your Portal.
+          </span>
         </div>
       </div>
 
-      {/* Module 3: Technical Information + Textures */}
-      <div
-        className="drop-shadow-[0px_4px_1.4px_rgba(0,0,0,0.03)] flex flex-col gap-[4px] items-start relative shrink-0 w-full"
-        data-name="Module 3"
-      >
-        {/* Technical Information */}
-        <div
-          className="bg-white flex flex-col items-center justify-center overflow-hidden px-[32px] py-[20px] relative rounded-tl-[10px] rounded-tr-[10px] shrink-0 w-full"
-          data-name="Technical Information"
-        >
-          <div className="flex flex-col gap-[15px] items-start relative shrink-0 w-full">
-            <div className="flex flex-col font-sans font-bold justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-[#19213d] w-full">
-              <p className="leading-[15.6px] m-0">Technical Information</p>
+      {/* Card 3: Technical Specs + Included PBR Channels */}
+      <div className="bg-white rounded-[8px] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] overflow-hidden flex flex-col divide-y divide-[var(--color-kumo-line)]">
+        {/* Technical Information Table */}
+        <div className="p-4 flex flex-col gap-3">
+          <h3 className="m-0 text-[13px] font-semibold text-[var(--text-color-kumo-strong)]">
+            Technical specifications
+          </h3>
+
+          <div className="flex flex-col divide-y divide-[var(--color-kumo-line)] text-[12px]">
+            <div className="py-2 flex items-center justify-between gap-2">
+              <span className="text-[var(--text-color-kumo-subtle)]">Supported formats</span>
+              <div className="flex flex-wrap gap-1 justify-end">
+                {asset.formats.map((fmt) => (
+                  <span
+                    key={fmt}
+                    className="kumo-mono text-[10px] uppercase px-1.5 py-0.5 rounded-[4px] bg-[var(--color-kumo-recessed)] border border-[var(--color-kumo-line)] text-[var(--text-color-kumo-strong)] font-medium"
+                  >
+                    {fmt}
+                  </span>
+                ))}
+              </div>
             </div>
 
-            <div className="flex flex-col gap-[5px] items-start relative shrink-0 w-full">
-              {/* Format */}
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal justify-center leading-[0] min-w-0 not-italic relative self-stretch text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[15.6px] m-0">Format:</p>
-                  </div>
-                </div>
-                <div className="content-start flex flex-wrap gap-[5px] items-start pr-[10px] relative shrink-0 w-[163px]">
-                  {asset.formats.map((fmt) => (
-                    <div
-                      key={fmt}
-                      className="h-[20px] relative shrink-0 w-[33px]"
-                    >
-                      <div className="-translate-y-1/2 absolute bg-[#797979] flex h-[14px] items-center justify-center left-0 px-[5px] py-[2px] rounded-[12px] top-1/2 w-[33px]">
-                        <div className="flex flex-col font-sans font-bold justify-center leading-[0] not-italic relative shrink-0 text-[10px] text-white text-center whitespace-nowrap">
-                          <p className="leading-[10px] m-0">{fmt}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="py-2 flex items-center justify-between gap-2">
+              <span className="text-[var(--text-color-kumo-subtle)]">Geometry</span>
+              <span className="kumo-mono text-[var(--text-color-kumo-strong)] text-right">
+                {asset.geometryTriangles} · {asset.geometryVertices}
+              </span>
+            </div>
 
-              {/* Geometry */}
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[15.6px] m-0">Geometry:</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <div className="flex-1 font-sans font-normal leading-[0] min-w-0 not-italic relative text-[14px] text-[#19213d]">
-                    <p className="leading-[19.6px] m-0">
-                      {asset.geometryTriangles}
-                    </p>
-                    <p className="leading-[19.6px] m-0">
-                      {asset.geometryVertices}
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <div className="py-2 flex items-center justify-between gap-2">
+              <span className="text-[var(--text-color-kumo-subtle)]">Disk / VRAM footprint</span>
+              <span className="kumo-mono text-[var(--text-color-kumo-strong)]">
+                {asset.diskSize.replace(",", ".")} · {asset.vram.replace(",", ".")} VRAM
+              </span>
+            </div>
 
-              {/* Disk size */}
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[15.6px] m-0">Disk size:</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[15.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.diskSize}
-                  </p>
-                </div>
-              </div>
+            <div className="py-2 flex items-center justify-between gap-2">
+              <span className="text-[var(--text-color-kumo-subtle)]">Real-world dimensions</span>
+              <span className="kumo-mono text-[var(--text-color-kumo-strong)]">
+                {asset.physicalSize}
+              </span>
+            </div>
 
-              {/* Memory */}
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[15.6px] m-0">Memory:</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[15.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.memory}
-                  </p>
-                </div>
-              </div>
-
-              {/* VRAM */}
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[15.6px] m-0">VRAM:</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[15.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.vram}
-                  </p>
-                </div>
-              </div>
-
-              {/* Physical size */}
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[15.6px] m-0">Physical size:</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[15.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.physicalSize}
-                  </p>
-                </div>
-              </div>
-
-              {/* LODs */}
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[15.6px] m-0">LODs:</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[15.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.lodsCount}
-                  </p>
-                </div>
-              </div>
-
-              {/* Texture format */}
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[15.6px] m-0">Texture format:</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[15.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.textureFormat}
-                  </p>
-                </div>
-              </div>
+            <div className="pt-2 flex items-center justify-between gap-2">
+              <span className="text-[var(--text-color-kumo-subtle)]">LOD levels / Bit depth</span>
+              <span className="kumo-mono text-[var(--text-color-kumo-strong)]">
+                {asset.lodsCount} LODs · {asset.textureFormat}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Textures Checkboxes */}
-        <div
-          className="bg-white flex flex-col items-start overflow-hidden px-[32px] py-[20px] relative rounded-bl-[10px] rounded-br-[10px] rounded-tl-[4px] shrink-0 w-full"
-          data-name="Textures"
-        >
-          <div className="flex flex-col gap-[16px] items-start relative shrink-0 w-full">
-            <div className="flex flex-col items-start relative shrink-0 w-full">
-              <div className="flex flex-col font-sans font-bold justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-[#19213d] w-full">
-                <p className="leading-[15.6px] m-0">Textures</p>
-              </div>
-            </div>
+        {/* Included PBR Texture Channels Checklist */}
+        <div className="p-4 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between">
+            <h3 className="m-0 text-[13px] font-semibold text-[var(--text-color-kumo-strong)]">
+              Included PBR channels
+            </h3>
+            <span className="kumo-mono text-[11px] text-[var(--text-color-kumo-subtle)]">
+              {textures.filter((t) => t.checked).length} / {textures.length} active
+            </span>
+          </div>
 
-            <div className="content-start flex flex-wrap gap-y-[12px] gap-x-[22px] items-start relative shrink-0 w-full">
-              {textures.map((tex) => (
-                <button
-                  key={tex.id}
-                  type="button"
-                  onClick={() => toggleTexture(tex.id)}
-                  className="bg-white cursor-pointer flex gap-[8px] items-center opacity-80 hover:opacity-100 overflow-hidden relative shrink-0 w-[151px] border-0 p-0 text-left"
-                  data-name="Texture"
+          <div className="grid grid-cols-2 gap-1.5">
+            {textures.map((tex) => (
+              <button
+                key={tex.id}
+                type="button"
+                onClick={() => toggleTexture(tex.id)}
+                className={`px-2.5 py-1.5 rounded-[6px] border text-left flex items-center gap-2 cursor-pointer transition-colors text-[12px] ${
+                  tex.checked
+                    ? "bg-[var(--color-kumo-canvas)] border-[var(--color-kumo-line)] text-[var(--text-color-kumo-strong)]"
+                    : "bg-white border-transparent text-[var(--text-color-kumo-subtle)] hover:bg-[var(--color-kumo-tint)]"
+                }`}
+              >
+                <span
+                  className={`size-4 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${
+                    tex.checked
+                      ? "bg-[var(--color-kumo-brand)] text-white"
+                      : "bg-[var(--color-kumo-recessed)] border border-[var(--color-kumo-line)]"
+                  }`}
                 >
-                  {tex.checked ? (
-                    <div className="bg-[#004bda] overflow-hidden relative rounded-[5px] shrink-0 size-[20px] flex items-center justify-center">
-                      <img
-                        alt=""
-                        className="block max-w-none"
-                        src="/assets/overlay_checkbox_tick.svg"
-                        width={11.7}
-                        height={8.76}
-                      />
-                    </div>
-                  ) : (
-                    <div className="bg-[#dbdbdb] relative rounded-[5px] shrink-0 size-[20px]" />
-                  )}
-                  <div className="flex flex-col font-sans font-normal justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-[#19213d] whitespace-nowrap">
-                    <p className="leading-[15.6px] m-0">{tex.label}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
+                  {tex.checked && <Check size={11} strokeWidth={2.2} />}
+                </span>
+                <span className="truncate">{tex.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Module 4: Details + Share/Report Buttons */}
-      <div
-        className="drop-shadow-[0px_4px_1.4px_rgba(0,0,0,0.03)] flex flex-col gap-[4px] items-start relative shrink-0 w-full"
-        data-name="Module 4"
-      >
-        <div
-          className="bg-white flex flex-col items-center justify-center overflow-hidden px-[32px] py-[20px] relative rounded-tl-[10px] rounded-tr-[10px] shrink-0 w-full"
-          data-name="Details"
-        >
-          <div className="flex flex-col gap-[15px] items-start relative shrink-0 w-full">
-            <div className="flex flex-col font-sans font-bold justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-[#19213d] w-full">
-              <p className="leading-[15.6px] m-0">Details</p>
-            </div>
+      {/* Card 4: Provenance, License & Share / Report */}
+      <div className="bg-white rounded-[8px] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] p-4 flex flex-col gap-3">
+        <h3 className="m-0 text-[13px] font-semibold text-[var(--text-color-kumo-strong)]">
+          License & provenance
+        </h3>
 
-            <div className="flex flex-col gap-[5px] items-start relative shrink-0 w-full">
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[19.6px] m-0">Publish date</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[19.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.publishDate}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[19.6px] m-0">License terms</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[19.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.licenseTerms}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[19.6px] m-0">Allow usage with AI</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[19.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.allowAiUsage}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start justify-between relative shrink-0 w-full">
-                <div className="flex items-center relative shrink-0 w-[165px]">
-                  <div className="flex flex-1 flex-col font-sans font-normal h-full justify-center leading-[0] min-w-0 not-italic relative text-[14px] text-[rgba(25,33,61,0.7)]">
-                    <p className="leading-[19.6px] m-0">License Owner</p>
-                  </div>
-                </div>
-                <div className="flex items-start relative shrink-0 w-[165px]">
-                  <p className="flex-1 font-sans font-normal leading-[19.6px] min-w-0 not-italic relative text-[14px] text-[#19213d] m-0">
-                    {asset.licenseOwner}
-                  </p>
-                </div>
-              </div>
-            </div>
+        <div className="flex flex-col divide-y divide-[var(--color-kumo-line)] text-[12px]">
+          <div className="py-1.5 flex items-center justify-between">
+            <span className="text-[var(--text-color-kumo-subtle)]">Published</span>
+            <span className="kumo-mono text-[var(--text-color-kumo-default)]">
+              {asset.publishDate}
+            </span>
+          </div>
+          <div className="py-1.5 flex items-center justify-between">
+            <span className="text-[var(--text-color-kumo-subtle)]">License tier</span>
+            <span className="font-medium text-[var(--text-color-kumo-link)]">
+              {asset.licenseTerms}
+            </span>
+          </div>
+          <div className="py-1.5 flex items-center justify-between">
+            <span className="text-[var(--text-color-kumo-subtle)]">Generative AI training</span>
+            <span className="kumo-mono text-[var(--text-color-kumo-default)]">
+              {asset.allowAiUsage}
+            </span>
+          </div>
+          <div className="pt-1.5 flex items-center justify-between">
+            <span className="text-[var(--text-color-kumo-subtle)]">Authority</span>
+            <span className="text-[var(--text-color-kumo-strong)] font-medium">
+              {asset.licenseOwner}
+            </span>
           </div>
         </div>
 
-        {/* Share & Something Wrong Buttons */}
-        <div
-          className="bg-white flex gap-[10px] items-center justify-center overflow-hidden px-[32px] py-[20px] relative rounded-bl-[10px] rounded-br-[10px] shrink-0 w-full"
-          data-name="Share buttons"
-        >
+        <div className="pt-2 border-t border-[var(--color-kumo-line)] grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => {
+              if (typeof navigator !== "undefined" && navigator.clipboard) {
+                navigator.clipboard.writeText(window.location.href).catch(() => {});
+              }
               setShareCopied(true);
               setTimeout(() => setShareCopied(false), 2000);
             }}
-            className="bg-[#ededed] hover:bg-[#e2e2e2] transition-colors cursor-pointer flex gap-[12px] items-center overflow-hidden px-[22px] py-[8px] relative rounded-[10px] shrink-0 border-0"
+            className="h-8 px-3 rounded-[8px] bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] text-[12px] font-medium text-[var(--text-color-kumo-default)] inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
           >
-            <div className="relative shrink-0 size-[24px]">
-              <img
-                alt=""
-                className="block max-w-none"
-                src="/assets/overlay_share_icon.svg"
-                width={24}
-                height={24}
-              />
-            </div>
-            <div className="flex flex-col font-nacelle font-normal justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-[#19213d] whitespace-nowrap">
-              <p className="leading-[15.6px] m-0">
-                {shareCopied ? "Copied!" : "Share"}
-              </p>
-            </div>
+            <Share2 size={13} strokeWidth={1.5} className="text-[var(--text-color-kumo-subtle)]" />
+            <span>{shareCopied ? "Link copied" : "Share asset"}</span>
           </button>
 
           <button
@@ -890,22 +640,10 @@ export function PanelModule({
               setReportSubmitted(true);
               setTimeout(() => setReportSubmitted(false), 2000);
             }}
-            className="bg-[#ededed] hover:bg-[#e2e2e2] transition-colors cursor-pointer flex gap-[12px] items-center overflow-hidden px-[22px] py-[8px] relative rounded-[10px] shrink-0 border-0"
+            className="h-8 px-3 rounded-[8px] bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] text-[12px] font-medium text-[var(--text-color-kumo-default)] inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
           >
-            <div className="relative shrink-0 size-[24px]">
-              <img
-                alt=""
-                className="block max-w-none"
-                src="/assets/overlay_report_icon.svg"
-                width={24}
-                height={24}
-              />
-            </div>
-            <div className="flex flex-col font-nacelle font-normal justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-[#19213d] whitespace-nowrap">
-              <p className="leading-[15.6px] m-0">
-                {reportSubmitted ? "Reported!" : "Something Wrong"}
-              </p>
-            </div>
+            <AlertCircle size={13} strokeWidth={1.5} className="text-[var(--text-color-kumo-subtle)]" />
+            <span>{reportSubmitted ? "Report logged" : "Report issue"}</span>
           </button>
         </div>
       </div>

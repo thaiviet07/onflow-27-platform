@@ -3,6 +3,20 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Box,
+  CheckCircle2,
+  CreditCard,
+  Download,
+  HardDrive,
+  Info,
+  Layers,
+  Sparkles,
+  X,
+} from "lucide-react";
+import { CreditIcon } from "./CreditIcon";
 
 export type PurchaseStep = "confirm" | "success" | "failed";
 
@@ -47,79 +61,57 @@ function PurchaseAssetSummaryCard({
 }) {
   return (
     <div
-      className="bg-[#f0f0f0] border-[#c7c7c7] border-[0.3px] border-solid flex flex-col items-start overflow-hidden relative rounded-[10px] shrink-0 w-full"
-      data-node-id={variant === "success" ? "1239:8041" : "1220:11956"}
+      className={`w-full rounded-[8px] border p-3 flex items-center justify-between gap-3 ${
+        variant === "success"
+          ? "bg-[#ecfdf3] border-[#34c48b]/40"
+          : "bg-[var(--color-kumo-canvas)] border-[var(--color-kumo-line)]"
+      }`}
     >
-      <div
-        className={`${
-          variant === "success" ? "bg-[#e4f3ed]" : "bg-[#f0f0f0]"
-        } border-[#c7c7c7] border-[0.3px] border-solid flex items-center justify-between gap-3 overflow-hidden p-[10px] relative shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] shrink-0 w-full`}
-      >
-        <div className="flex flex-1 gap-[13px] items-center min-w-0">
-          <div className="bg-[#aaa] relative rounded-[10px] shrink-0 size-[40px] overflow-hidden">
-            {assetImgUrl && (
-              <img
-                src={assetImgUrl}
-                alt={assetTitle}
-                className="w-full h-full object-cover block"
-              />
-            )}
-          </div>
-
-          <div className="flex flex-1 flex-col gap-[10px] items-start min-w-0">
-            <p className="m-0 font-sans font-semibold text-[12px] leading-normal text-[#19213d] truncate w-full">
-              {assetTitle}
-            </p>
-            <div className="flex flex-wrap gap-[12px] items-center">
-              <div className="flex gap-[2.25px] items-center shrink-0">
-                <img
-                  alt=""
-                  src="/assets/purchase/66ccc.svg"
-                  width={12}
-                  height={12}
-                  className="block shrink-0"
-                />
-                <span className="font-sans font-normal text-[9px] leading-[11.7px] text-[rgba(25,33,61,0.7)] whitespace-nowrap">
-                  {lodText}
-                </span>
-              </div>
-
-              <div className="flex gap-[2.25px] items-center shrink-0">
-                <img
-                  alt=""
-                  src="/assets/purchase/5b17d.svg"
-                  width={13.5}
-                  height={12}
-                  className="block shrink-0"
-                />
-                <span className="font-sans font-normal text-[9px] leading-[11.7px] text-[rgba(25,33,61,0.7)] whitespace-nowrap">
-                  {textureResolution}
-                </span>
-              </div>
-
-              <div className="flex gap-[2.25px] items-center shrink-0">
-                <div className="h-[12px] w-[13.5px] flex items-center justify-center shrink-0">
-                  <img
-                    alt=""
-                    src="/assets/purchase/f46b2.svg"
-                    width={11.55}
-                    height={11.55}
-                    className="block shrink-0"
-                  />
-                </div>
-                <span className="font-sans font-normal text-[9px] leading-[11.7px] text-[rgba(25,33,61,0.7)] whitespace-nowrap uppercase">
-                  {objectFormat}
-                </span>
-              </div>
-            </div>
-          </div>
+      <div className="flex flex-1 gap-3 items-center min-w-0">
+        <div className="bg-[#18181b] relative rounded-[6px] shrink-0 size-11 overflow-hidden border border-[var(--color-kumo-line)]">
+          {assetImgUrl && (
+            <img
+              src={assetImgUrl}
+              alt={assetTitle}
+              className="w-full h-full object-cover block"
+            />
+          )}
         </div>
 
-        <div className="flex items-center justify-end shrink-0">
-          <span className="font-sans font-normal text-[12px] leading-normal text-[rgba(25,33,61,0.7)] whitespace-nowrap">
-            {creditCost} Credits
-          </span>
+        <div className="flex flex-1 flex-col gap-1 items-start min-w-0">
+          <p className="m-0 font-semibold text-[13px] leading-tight text-[var(--text-color-kumo-strong)] truncate w-full">
+            {assetTitle}
+          </p>
+          <div className="flex flex-wrap gap-2 items-center text-[11px] text-[var(--text-color-kumo-subtle)] kumo-mono">
+            <span className="inline-flex items-center gap-1">
+              <Layers size={11} />
+              <span>{lodText}</span>
+            </span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1">
+              <Sparkles size={11} />
+              <span>{textureResolution}</span>
+            </span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1 uppercase font-medium text-[var(--text-color-kumo-strong)]">
+              <Box size={11} />
+              <span>{objectFormat}</span>
+            </span>
+          </div>
         </div>
+      </div>
+
+      <div className="flex items-center justify-end shrink-0">
+        <span className="rounded-full px-2.5 py-0.5 text-[12px] font-semibold border border-[var(--color-kumo-fill)] bg-white text-[var(--text-color-kumo-strong)] kumo-mono whitespace-nowrap inline-flex items-center gap-1">
+          {creditCost === 0 ? (
+            "Free"
+          ) : (
+            <>
+              <span>{creditCost}</span>
+              <CreditIcon size={11} />
+            </>
+          )}
+        </span>
       </div>
     </div>
   );
@@ -132,9 +124,9 @@ export function QuickPurchaseOverlay({
   assetTitle = "White Marble Incense Burner",
   assetImgUrl,
   lodLabel = "High Poly, LODs",
-  textureResolution = "PNG 2048x2048",
+  textureResolution = "PNG 4096×4096",
   objectFormat = "FBX",
-  downloadSize = "38,86 MB",
+  downloadSize = "38.8 MB",
   creditCost = 5,
   initialStep = "confirm",
 }: QuickPurchaseOverlayProps) {
@@ -175,35 +167,38 @@ export function QuickPurchaseOverlay({
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/55 p-4 overflow-y-auto gap-3"
+      className="kumo-portal fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/55 p-4 overflow-y-auto gap-3"
       onClick={handleClose}
       role="dialog"
       aria-modal="true"
       aria-label="Quick Purchase Overlay"
     >
-      {/* State Preview Switcher (on backdrop for inspecting all 3 purchase states) */}
+      {/* State Preview Switcher (Kumo Segmented Pill Track on backdrop for testing all 3 states) */}
       <div
-        className="flex items-center gap-1.5 bg-[#19213d]/90 backdrop-blur-xs border border-white/15 px-2 py-1.5 rounded-full shadow-lg"
+        role="tablist"
+        className="inline-flex items-center h-8 rounded-[8px] bg-white/95 border border-[var(--color-kumo-line)] p-0.5 gap-0.5 shadow-[var(--shadow-kumo-md)]"
         onClick={(e) => e.stopPropagation()}
       >
         {(
           [
-            { id: "confirm", label: "Confirm" },
-            { id: "success", label: "Successful" },
-            { id: "failed", label: "Failed" },
+            { id: "confirm", label: "Confirm order" },
+            { id: "success", label: "Unlocked" },
+            { id: "failed", label: "Insufficient credits" },
           ] as const
         ).map((tab) => (
           <button
             key={tab.id}
             type="button"
+            role="tab"
+            aria-selected={step === tab.id}
             onClick={() => {
               setStep(tab.id);
               setDownloadStarted(false);
             }}
-            className={`px-3 py-1 rounded-full font-sans text-[11px] font-semibold border-0 cursor-pointer transition-colors ${
+            className={`h-7 px-2.5 rounded-[6px] text-[12px] border-0 cursor-pointer transition-colors ${
               step === tab.id
-                ? "bg-[#004bda] text-white"
-                : "bg-transparent text-white/75 hover:text-white"
+                ? "bg-[var(--text-color-kumo-strong)] text-white font-medium"
+                : "bg-transparent text-[var(--text-color-kumo-subtle)] hover:text-[var(--text-color-kumo-default)]"
             }`}
           >
             {tab.label}
@@ -211,307 +206,284 @@ export function QuickPurchaseOverlay({
         ))}
       </div>
 
-      {/* Main 537px Figma Quick Purchase Overlay Card */}
+      {/* Main 520px Cloudflare Kumo Modal Card */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white flex flex-col gap-[20px] items-center overflow-hidden p-[20px] relative rounded-[10px] w-full max-w-[537px] shadow-2xl"
-        data-node-id={
-          step === "confirm"
-            ? "1220:11952"
-            : step === "success"
-            ? "1239:8032"
-            : "1239:8063"
-        }
+        className="bg-white border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-md)] flex flex-col overflow-hidden relative rounded-[12px] w-full max-w-[520px]"
       >
-        {step === "confirm" && (
-          <>
-            {/* Header */}
-            <div
-              className="flex flex-col gap-[10px] items-center justify-center py-[14px] text-center w-full"
-              data-node-id="1220:11953"
-            >
-              <h2 className="m-0 font-google-sans font-bold text-[20px] leading-[1.2] text-[#19213d]">
-                Confirm Purchase
-              </h2>
-              <p className="m-0 font-sans font-normal text-[12px] leading-[15.6px] text-[rgba(25,33,61,0.7)]">
-                Please review your order details before completing the purchase
+        {/* Top 54px Kumo Modal Header */}
+        <div className="h-[54px] px-5 bg-[var(--color-kumo-canvas)] border-b border-[var(--color-kumo-line)] flex items-center justify-between">
+          <span className="text-[15px] font-semibold text-[var(--text-color-kumo-strong)]">
+            {step === "confirm"
+              ? "Confirm asset unlock"
+              : step === "success"
+              ? "Asset unlocked & ready"
+              : "Insufficient workspace credits"}
+          </span>
+          <button
+            type="button"
+            onClick={handleClose}
+            aria-label="Close purchase modal"
+            className="size-7 rounded-[6px] bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] flex items-center justify-center text-[var(--text-color-kumo-subtle)] hover:text-[var(--text-color-kumo-default)] cursor-pointer"
+          >
+            <X size={14} strokeWidth={1.5} />
+          </button>
+        </div>
+
+        <div className="p-5 flex flex-col gap-4">
+          {step === "confirm" && (
+            <>
+              <p className="m-0 text-[13px] text-[var(--text-color-kumo-subtle)]">
+                Review your export parameters before unlocking this asset for your workspace.
               </p>
-            </div>
 
-            {/* Asset Card */}
-            <PurchaseAssetSummaryCard
-              assetTitle={assetTitle}
-              assetImgUrl={assetImgUrl}
-              lodText={formattedLod}
-              textureResolution={textureResolution}
-              objectFormat={objectFormat}
-              creditCost={creditCost}
-              variant="neutral"
-            />
+              <PurchaseAssetSummaryCard
+                assetTitle={assetTitle}
+                assetImgUrl={assetImgUrl}
+                lodText={formattedLod}
+                textureResolution={textureResolution}
+                objectFormat={objectFormat}
+                creditCost={creditCost}
+                variant="neutral"
+              />
 
-            {/* Details & Actions */}
-            <div className="flex flex-col gap-[20px] items-start w-full">
-              {/* Download Size */}
-              <div className="flex items-center justify-between w-full">
-                <span className="font-sans font-normal text-[14px] leading-[15.6px] text-[#19213d]">
-                  Download Size
-                </span>
-                <div className="flex gap-[5px] items-center justify-end">
-                  <span className="font-sans font-normal text-[14px] leading-[15.6px] text-[#19213d] text-right whitespace-nowrap">
-                    {downloadSize}
+              {/* Breakdown Rows */}
+              <div className="flex flex-col divide-y divide-[var(--color-kumo-line)] border-y border-[var(--color-kumo-line)] text-[13px]">
+                <div className="py-2 flex items-center justify-between">
+                  <span className="text-[var(--text-color-kumo-subtle)]">
+                    Available workspace balance
                   </span>
-                  <div className="h-[20px] w-[16px] flex items-center justify-center shrink-0">
-                    <img
-                      alt=""
-                      src="/assets/purchase/8cace.svg"
-                      width={16}
-                      height={16}
-                      className="block shrink-0"
-                    />
-                  </div>
+                  <span className="kumo-mono font-medium text-[var(--text-color-kumo-strong)] inline-flex items-center gap-1">
+                    <span>2,686</span>
+                    <CreditIcon size={11} />
+                  </span>
+                </div>
+
+                <div className="py-2 flex items-center justify-between">
+                  <span className="text-[var(--text-color-kumo-subtle)] inline-flex items-center gap-1.5">
+                    <HardDrive size={14} />
+                    <span>Estimated archive size</span>
+                  </span>
+                  <span className="kumo-mono font-medium text-[var(--text-color-kumo-strong)]">
+                    {downloadSize.replace(",", ".")}
+                  </span>
+                </div>
+
+                <div className="py-2 flex items-center justify-between">
+                  <span className="font-semibold text-[var(--text-color-kumo-strong)] inline-flex items-center gap-1.5">
+                    <CreditCard size={14} className="text-[var(--text-color-kumo-subtle)]" />
+                    <span>Total credit deduction</span>
+                  </span>
+                  <span className="kumo-mono font-semibold text-[14px] text-[var(--text-color-kumo-strong)] inline-flex items-center gap-1">
+                    {creditCost === 0 ? (
+                      <>
+                        <span>0</span>
+                        <CreditIcon size={12} />
+                        <span>(Free)</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>−{creditCost}</span>
+                        <CreditIcon size={12} />
+                      </>
+                    )}
+                  </span>
+                </div>
+
+                <div className="py-2 bg-[var(--color-kumo-canvas)] -mx-1 px-1 flex items-center justify-between">
+                  <span className="text-[12px] text-[var(--text-color-kumo-subtle)]">
+                    Remaining balance after unlock
+                  </span>
+                  <span className="kumo-mono font-semibold text-[13px] text-[var(--text-color-kumo-success)] inline-flex items-center gap-1">
+                    <span>{(2686 - creditCost).toLocaleString("en-US")}</span>
+                    <CreditIcon size={11} />
+                  </span>
                 </div>
               </div>
 
-              {/* Total Credit Cost */}
-              <div className="flex items-center justify-between w-full">
-                <span className="font-sans font-bold text-[14px] leading-[15.6px] text-[#19213d]">
-                  Total Credit Cost
+              {/* Kumo Info Callout */}
+              <div className="rounded-[8px] bg-[var(--color-kumo-recessed)] px-3.5 py-2.5 flex items-start gap-2.5 text-[12px] text-[var(--text-color-kumo-subtle)]">
+                <Info size={14} className="text-[var(--text-color-kumo-default)] shrink-0 mt-0.5" />
+                <span>
+                  Once unlocked, this asset is permanently added to your workspace Downloads with unlimited 0-credit re-exports in any format or resolution.
                 </span>
-                <div className="flex gap-[5px] items-center justify-end">
-                  <span className="font-sans font-bold text-[14px] leading-[15.6px] text-[#19213d] text-right whitespace-nowrap">
-                    {creditCost}
-                  </span>
-                  <img
-                    alt=""
-                    src="/assets/purchase/1ef85.svg"
-                    width={16}
-                    height={20}
-                    className="block shrink-0"
-                  />
-                </div>
               </div>
 
-              {/* Note Box */}
-              <div className="bg-white border-[0.3px] border-[rgba(25,33,61,0.7)] border-solid flex items-center justify-center p-[10px] rounded-[5px] w-full">
-                <p className="m-0 flex-1 font-sans font-normal text-[12px] leading-[15.6px] text-[rgba(25,33,61,0.7)]">
-                  <span className="font-bold">ⓘ Note: </span>
-                  <span>
-                    After purchase, your downloads will be immediately available
-                    in your purchase history. All purchases are final and
-                    non-refundable.
-                  </span>
-                </p>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex gap-[10px] items-center w-full">
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="h-9 px-3.5 rounded-[8px] bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] text-[13px] font-medium text-[var(--text-color-kumo-default)] cursor-pointer"
+                >
+                  Cancel
+                </button>
                 <button
                   type="button"
                   onClick={handleConfirmPurchase}
-                  className="bg-[#004bda] hover:bg-[#003eb5] transition-colors flex flex-1 h-[40px] items-center justify-center rounded-[10px] border-0 cursor-pointer font-sans font-bold text-[14px] leading-[15.6px] text-white"
+                  className="h-9 px-4 rounded-[8px] kumo-btn-primary text-[13px] font-medium cursor-pointer"
                   data-name="PO 1"
                 >
-                  Confirm Purchase
+                  Confirm & unlock
+                </button>
+              </div>
+            </>
+          )}
+
+          {step === "success" && (
+            <>
+              <div className="flex items-start gap-3">
+                <div className="size-9 rounded-[8px] bg-[#ecfdf3] border border-[#34c48b]/40 text-[var(--text-color-kumo-success)] flex items-center justify-center shrink-0">
+                  <CheckCircle2 size={18} strokeWidth={1.75} />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <h3 className="m-0 text-[14px] font-semibold text-[var(--text-color-kumo-strong)]">
+                    Added to workspace archive
+                  </h3>
+                  <p className="m-0 text-[13px] text-[var(--text-color-kumo-subtle)]">
+                    Your archive checksum is verified and ready for immediate download or Bridge stream.
+                  </p>
+                </div>
+              </div>
+
+              <PurchaseAssetSummaryCard
+                assetTitle={assetTitle}
+                assetImgUrl={assetImgUrl}
+                lodText={formattedLod}
+                textureResolution={textureResolution}
+                objectFormat={objectFormat}
+                creditCost={creditCost}
+                variant="success"
+              />
+
+              {/* Download Callout Box */}
+              <div className="rounded-[8px] bg-[#3e8eff]/[.07] border border-[#3e8eff]/35 p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <span className="text-[13px] font-semibold text-[var(--text-color-kumo-strong)]">
+                    {downloadStarted
+                      ? `Packing ${objectFormat} bundle...`
+                      : "Download archive package"}
+                  </span>
+                  <span className="text-[12px] text-[var(--text-color-kumo-subtle)]">
+                    {downloadStarted
+                      ? `${assetTitle} (${objectFormat} · ${textureResolution})`
+                      : "Includes calibrated PBR maps and LOD hierarchy"}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setDownloadStarted(true)}
+                  className="h-8 px-3.5 rounded-[8px] kumo-btn-primary text-[12px] font-medium inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+                >
+                  <Download size={13} strokeWidth={1.5} />
+                  <span>{downloadStarted ? "Downloading..." : "Download now"}</span>
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleClose();
+                    router.push("/portal?tab=downloads");
+                  }}
+                  className="text-[12px] font-medium text-[var(--text-color-kumo-link)] hover:underline bg-transparent border-0 p-0 cursor-pointer"
+                >
+                  View in Portal Downloads ↗
                 </button>
                 <button
                   type="button"
                   onClick={handleClose}
-                  className="bg-[#ededed] hover:bg-[#e2e2e2] transition-colors cursor-pointer flex h-[40px] items-center justify-center rounded-[10px] shrink-0 w-[103px] border-0 font-sans font-normal text-[14px] leading-[15.6px] text-[#101820]"
+                  className="h-9 px-4 rounded-[8px] bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] text-[13px] font-medium text-[var(--text-color-kumo-default)] cursor-pointer"
                 >
-                  Cancel
+                  Done
                 </button>
               </div>
-            </div>
+            </>
+          )}
 
-            {/* Terms Footer */}
-            <div className="flex items-start w-full" data-name="PO Terms or Service">
-              <p className="m-0 flex-1 font-sans font-normal text-[12px] leading-[18.2px] text-[rgba(25,33,61,0.7)] text-center">
-                By placing order, you agree to Onflow’s{" "}
-                <a
-                  href="/portal"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleClose();
-                    router.push("/portal");
-                  }}
-                  className="text-[#002679] underline cursor-pointer"
-                >
-                  Terms of Service
-                </a>{" "}
-                and the{" "}
-                <a
-                  href="/portal"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleClose();
-                    router.push("/portal");
-                  }}
-                  className="text-[#002679] underline cursor-pointer"
-                >
-                  End User License Agreement
-                </a>
-              </p>
-            </div>
-          </>
-        )}
-
-        {step === "success" && (
-          <>
-            {/* Order Summary Success Header */}
-            <div
-              className="drop-shadow-[4px_5px_5px_rgba(0,0,0,0.1)] flex flex-col gap-[22px] items-center py-[14px] rounded-[10px] w-full"
-              data-name="Order Summary"
-            >
-              <img
-                alt=""
-                src="/assets/purchase/21b61.svg"
-                width={60}
-                height={60}
-                className="block shrink-0"
-              />
-              <div className="flex flex-col gap-[6px] items-center text-center">
-                <h2 className="m-0 font-google-sans font-bold text-[20px] leading-normal text-[#19213d]">
-                  Purchase Successful!
-                </h2>
-                <p className="m-0 font-sans font-normal text-[12px] leading-normal text-[rgba(25,33,61,0.7)]">
-                  Your order has been processed and your assets are ready for
-                  download
-                </p>
+          {step === "failed" && (
+            <>
+              <div className="rounded-[8px] bg-[#fef2f2] border border-[#ff6b70]/45 p-3.5 flex items-start gap-3">
+                <div className="size-8 rounded-[6px] bg-white border border-[#ff6b70]/35 text-[var(--text-color-kumo-danger)] flex items-center justify-center shrink-0 mt-0.5">
+                  <AlertTriangle size={16} strokeWidth={1.75} />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <h3 className="m-0 text-[14px] font-semibold text-[var(--text-color-kumo-strong)]">
+                    Not enough credits to unlock this asset
+                  </h3>
+                  <p className="m-0 text-[12.5px] text-[var(--text-color-kumo-subtle)]">
+                    Your workspace balance is below the required unlock cost. Top up your credit balance to unlock this asset immediately.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Green-Tinted Asset Summary Card */}
-            <PurchaseAssetSummaryCard
-              assetTitle={assetTitle}
-              assetImgUrl={assetImgUrl}
-              lodText={formattedLod}
-              textureResolution={textureResolution}
-              objectFormat={objectFormat}
-              creditCost={creditCost}
-              variant="success"
-            />
+              <PurchaseAssetSummaryCard
+                assetTitle={assetTitle}
+                assetImgUrl={assetImgUrl}
+                lodText={formattedLod}
+                textureResolution={textureResolution}
+                objectFormat={objectFormat}
+                creditCost={creditCost}
+                variant="neutral"
+              />
 
-            {/* Download Callout Box */}
-            <div
-              className="border border-[#004bda] border-solid flex flex-col sm:flex-row gap-[16px] sm:gap-[32px] items-start sm:items-center p-[16px] relative rounded-[10px] w-full"
-              data-node-id="1239:8046"
-              style={{
-                backgroundImage:
-                  "linear-gradient(90deg, rgba(78, 72, 200, 0.1) 0%, rgba(78, 72, 200, 0.1) 100%), linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 255, 255) 100%)",
-              }}
-            >
-              <div className="flex flex-1 flex-col gap-[6px] items-start min-w-0">
-                <div className="flex gap-[6px] items-center">
-                  <img
-                    alt=""
-                    src="/assets/purchase/79944.svg"
-                    width={15.4}
-                    height={15.4}
-                    className="block shrink-0"
-                  />
-                  <span className="font-sans font-bold text-[14px] leading-[15.6px] text-[#19213d] whitespace-nowrap">
-                    Download Your Assets
+              {/* Shortfall Breakdown Table */}
+              <div className="rounded-[8px] bg-[var(--color-kumo-canvas)] border border-[var(--color-kumo-line)] divide-y divide-[var(--color-kumo-line)] text-[13px]">
+                <div className="px-3.5 py-2 flex items-center justify-between">
+                  <span className="text-[var(--text-color-kumo-subtle)]">
+                    Current workspace balance
+                  </span>
+                  <span className="kumo-mono font-medium text-[var(--text-color-kumo-strong)] inline-flex items-center gap-1">
+                    <span>{Math.max(1, creditCost - 3)}</span>
+                    <CreditIcon size={11} />
                   </span>
                 </div>
-                <p className="m-0 font-sans font-normal text-[14px] leading-[15.6px] text-[rgba(25,33,61,0.7)]">
-                  {downloadStarted
-                    ? `Downloading ${assetTitle} (${objectFormat} • ${textureResolution})...`
-                    : "Your download should start automatically. If it doesn’t, click the Download button to download manually."}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setDownloadStarted(true)}
-                className="bg-[#004bda] hover:bg-[#003eb5] transition-colors flex h-[40px] items-center justify-center px-[24px] rounded-[10px] shrink-0 border-0 cursor-pointer font-sans font-normal text-[14px] leading-[15.6px] text-white whitespace-nowrap"
-              >
-                {downloadStarted ? "Downloading..." : "Download Now"}
-              </button>
-            </div>
-
-            {/* Finished Button */}
-            <button
-              type="button"
-              onClick={handleClose}
-              className="bg-[#f0f0f0] hover:bg-[#e5e5e5] transition-colors border-[0.4px] border-[#19213d] border-solid cursor-pointer flex gap-[9px] h-[40px] items-center justify-center px-[24px] rounded-[10px] shrink-0"
-            >
-              <span className="font-sans font-normal text-[14px] leading-[15.6px] text-[#19213d] whitespace-nowrap">
-                Finished
-              </span>
-              <img
-                alt=""
-                src="/assets/purchase/8ed56.svg"
-                width={24}
-                height={24}
-                className="block shrink-0"
-              />
-            </button>
-          </>
-        )}
-
-        {step === "failed" && (
-          <>
-            {/* Order Summary Failed Header */}
-            <div
-              className="drop-shadow-[4px_5px_5px_rgba(0,0,0,0.1)] flex flex-col gap-[22px] items-center py-[14px] rounded-[10px] w-full"
-              data-name="Order Summary"
-            >
-              <img
-                alt=""
-                src="/assets/purchase/6e20d.svg"
-                width={60}
-                height={60}
-                className="block shrink-0"
-              />
-              <div className="flex flex-col gap-[6px] items-center text-center">
-                <h2 className="m-0 font-google-sans font-bold text-[20px] leading-normal text-[#19213d]">
-                  Purchase Failed!
-                </h2>
-                <p className="m-0 font-sans font-normal text-[12px] leading-normal text-[rgba(25,33,61,0.7)]">
-                  Your balance does not have enough credits to purchase this
-                  item, please try again.
-                </p>
-              </div>
-            </div>
-
-            {/* Failed Action Buttons */}
-            <div className="flex gap-[10px] items-start justify-center w-full">
-              <button
-                type="button"
-                onClick={() => setStep("confirm")}
-                className="bg-white hover:bg-[#f6f7fa] transition-colors border border-[#ccc] border-solid flex gap-[10px] h-[36px] items-center justify-center px-[15px] py-[10px] rounded-[10px] shrink-0 cursor-pointer"
-              >
-                <div className="flex items-center justify-center size-[16px] shrink-0">
-                  <div className="flex-none rotate-90">
-                    <div className="-scale-y-100 flex-none rotate-90">
-                      <img
-                        alt=""
-                        src="/assets/purchase/cce10.svg"
-                        width={17.23}
-                        height={17.23}
-                        className="block shrink-0"
-                      />
-                    </div>
-                  </div>
+                <div className="px-3.5 py-2 flex items-center justify-between">
+                  <span className="text-[var(--text-color-kumo-subtle)]">
+                    Asset unlock requirement
+                  </span>
+                  <span className="kumo-mono font-medium text-[var(--text-color-kumo-strong)] inline-flex items-center gap-1">
+                    <span>{creditCost}</span>
+                    <CreditIcon size={11} />
+                  </span>
                 </div>
-                <span className="font-sans font-normal text-[12px] leading-[15.6px] text-[rgba(25,33,61,0.7)] whitespace-nowrap">
-                  Return
-                </span>
-              </button>
+                <div className="px-3.5 py-2 bg-[#fef2f2] flex items-center justify-between">
+                  <span className="font-semibold text-[var(--text-color-kumo-danger)]">
+                    Credit shortfall
+                  </span>
+                  <span className="kumo-mono font-semibold text-[var(--text-color-kumo-danger)] inline-flex items-center gap-1">
+                    <span>+{Math.max(1, creditCost - Math.max(1, creditCost - 3))}</span>
+                    <CreditIcon size={11} />
+                  </span>
+                </div>
+              </div>
 
-              <button
-                type="button"
-                onClick={() => {
-                  handleClose();
-                  router.push("/payment");
-                }}
-                className="bg-[#004bda] hover:bg-[#003eb5] transition-colors flex h-[36px] items-center justify-center rounded-[10px] shrink-0 w-[233px] border-0 cursor-pointer font-sans font-bold text-[12px] leading-[15.6px] text-white whitespace-nowrap"
-              >
-                + Buy Credits
-              </button>
-            </div>
-          </>
-        )}
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-kumo-line)]">
+                <button
+                  type="button"
+                  onClick={() => setStep("confirm")}
+                  className="h-9 px-3 rounded-[8px] bg-white hover:bg-[var(--color-kumo-tint)] border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] text-[13px] font-medium text-[var(--text-color-kumo-default)] inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <ArrowLeft size={13} />
+                  <span>Back</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleClose();
+                    router.push("/payment");
+                  }}
+                  className="h-9 px-4 rounded-[8px] kumo-btn-primary text-[13px] font-medium cursor-pointer"
+                >
+                  + Top up credits
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

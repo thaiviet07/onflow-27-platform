@@ -252,56 +252,79 @@ export function HierarchySectionView({
       data-name="Content"
     >
       <div className="w-full max-w-[1360px] mx-auto flex flex-col gap-5">
-      {/* Cloudflare Kumo Sub-page Collection Header Card */}
-      <section className="relative rounded-[8px] w-full overflow-hidden bg-white border border-[var(--color-kumo-line)] shadow-[var(--shadow-kumo-xs)] p-5 sm:p-6">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex flex-col gap-1.5 min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="font-semibold leading-[26px] text-[20px] tracking-[-0.01em] m-0 text-[var(--text-color-kumo-strong)]">
-                  {section.collectionTitle}
-                </h1>
-                <span className="rounded-full px-2 py-0.5 text-[12px] font-medium border border-[var(--color-kumo-fill)] bg-[var(--color-kumo-canvas)] text-[var(--text-color-kumo-default)] kumo-mono">
-                  {filteredItems.length.toLocaleString()} assets
-                </span>
-                {section.badge && (
-                  <span className="rounded-full px-2 py-0.5 text-[11px] font-medium border border-dashed border-[var(--color-kumo-brand)] text-[var(--text-color-kumo-link)]">
+      {/* Sub-page Collection Header */}
+      <header className="w-full pt-1 pb-5 border-b border-[var(--color-kumo-line)]">
+        <div className="flex flex-col min-w-0">
+          {/* Primary Title + Inline Metrics */}
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
+            <h1 className="font-semibold text-[24px] sm:text-[28px] leading-[1.2] tracking-[-0.025em] m-0 text-[var(--text-color-kumo-strong)]">
+              {section.collectionTitle}
+            </h1>
+            <div className="inline-flex items-center gap-2 text-[12.5px] text-[var(--text-color-kumo-subtle)]">
+              <span className="kumo-mono font-medium text-[var(--text-color-kumo-default)]">
+                {filteredItems.length.toLocaleString()} assets
+              </span>
+              {section.badge && (
+                <>
+                  <span
+                    aria-hidden="true"
+                    className="text-[var(--text-color-kumo-inactive)]"
+                  >
+                    ·
+                  </span>
+                  <span className="font-medium text-[var(--text-color-kumo-link)]">
                     {section.badge}
                   </span>
-                )}
-              </div>
-
-              <p className="leading-[20px] text-[14px] text-[var(--text-color-kumo-subtle)] max-w-[780px] m-0">
-                {section.description}
-              </p>
-
-              <div className="flex flex-wrap items-center gap-3 pt-1 text-[12px] text-[var(--text-color-kumo-subtle)]">
-                {section.province && (
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin size={13} strokeWidth={1.5} />
-                    <span>{section.province}</span>
-                  </span>
-                )}
-                {section.eraDetail && (
-                  <span className="inline-flex items-center gap-1">
-                    <Clock size={13} strokeWidth={1.5} />
-                    <span>{section.eraDetail}</span>
-                  </span>
-                )}
-                {section.scanTech && (
-                  <span className="inline-flex items-center gap-1 kumo-mono">
-                    <Scan size={13} strokeWidth={1.5} />
-                    <span>{section.scanTech}</span>
-                  </span>
-                )}
-              </div>
+                </>
+              )}
             </div>
           </div>
 
+          {/* Collection Description */}
+          <p className="mt-2 text-[14px] leading-[1.6] text-[var(--text-color-kumo-subtle)] max-w-[680px] m-0">
+            {section.description}
+          </p>
+
+          {/* Geographic / Historical / Capture Metadata */}
+          {(section.province || section.eraDetail || section.scanTech) && (
+            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px] text-[var(--text-color-kumo-subtle)]">
+              {section.province && (
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPin
+                    size={13}
+                    strokeWidth={1.5}
+                    className="text-[var(--text-color-kumo-placeholder)] shrink-0"
+                  />
+                  <span>{section.province}</span>
+                </span>
+              )}
+              {section.eraDetail && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock
+                    size={13}
+                    strokeWidth={1.5}
+                    className="text-[var(--text-color-kumo-placeholder)] shrink-0"
+                  />
+                  <span>{section.eraDetail}</span>
+                </span>
+              )}
+              {section.scanTech && (
+                <span className="inline-flex items-center gap-1.5 kumo-mono">
+                  <Scan
+                    size={13}
+                    strokeWidth={1.5}
+                    className="text-[var(--text-color-kumo-placeholder)] shrink-0"
+                  />
+                  <span>{section.scanTech}</span>
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Quick Sub-Region / Sub-Monument Navigation Chips */}
           {section.level === "country" && (
-            <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-[var(--color-kumo-line)]">
-              <span className="text-[12px] text-[var(--text-color-kumo-subtle)] mr-1">
+            <div className="mt-4 flex flex-wrap items-center gap-1.5">
+              <span className="text-[12px] font-medium text-[var(--text-color-kumo-subtle)] mr-1">
                 Regions:
               </span>
               {VIETNAM_REGIONS_AND_MONUMENTS.map((reg) => (
@@ -309,7 +332,7 @@ export function HierarchySectionView({
                   key={reg.key}
                   type="button"
                   onClick={() => onNavigateHierarchy(reg.key)}
-                  className="h-7 px-2.5 rounded-[6px] bg-[var(--color-kumo-canvas)] hover:bg-[var(--color-kumo-tint)] text-[var(--text-color-kumo-default)] border border-[var(--color-kumo-line)] transition-colors cursor-pointer font-medium text-[12px]"
+                  className="h-7 px-2.5 rounded-[6px] bg-white hover:bg-[var(--color-kumo-tint)] text-[var(--text-color-kumo-default)] hover:text-[var(--text-color-kumo-strong)] border border-[var(--color-kumo-line)] transition-colors cursor-pointer font-medium text-[12px]"
                 >
                   {reg.name}
                 </button>
@@ -320,8 +343,8 @@ export function HierarchySectionView({
           {(section.level === "region" || section.level === "monument") &&
             section.subMonuments &&
             section.subMonuments.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-[var(--color-kumo-line)]">
-                <span className="text-[12px] text-[var(--text-color-kumo-subtle)] mr-1">
+              <div className="mt-4 flex flex-wrap items-center gap-1.5">
+                <span className="text-[12px] font-medium text-[var(--text-color-kumo-subtle)] mr-1">
                   {section.level === "region"
                     ? "Locations in region:"
                     : "Related locations:"}
@@ -331,7 +354,7 @@ export function HierarchySectionView({
                     key={mon.key}
                     type="button"
                     onClick={() => onNavigateHierarchy(mon.key)}
-                    className="h-7 px-2.5 rounded-[6px] bg-[var(--color-kumo-canvas)] hover:bg-[var(--color-kumo-tint)] text-[var(--text-color-kumo-default)] border border-[var(--color-kumo-line)] transition-colors cursor-pointer text-[12px]"
+                    className="h-7 px-2.5 rounded-[6px] bg-white hover:bg-[var(--color-kumo-tint)] text-[var(--text-color-kumo-default)] hover:text-[var(--text-color-kumo-strong)] border border-[var(--color-kumo-line)] transition-colors cursor-pointer text-[12px]"
                   >
                     {mon.name}
                   </button>
@@ -339,7 +362,7 @@ export function HierarchySectionView({
               </div>
             )}
         </div>
-      </section>
+      </header>
 
       {/* Cloudflare Kumo Unified Filter Menu Bar */}
       <section
